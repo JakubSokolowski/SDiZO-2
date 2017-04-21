@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 
 class IncidenceMatrix
 {
@@ -9,7 +10,10 @@ public:
 	~IncidenceMatrix();
 
 	void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
-	void Display();
+
+	void DisplayMatrix();
+	void DisplayWeights();
+
 private:
 
 	const int START = 1;
