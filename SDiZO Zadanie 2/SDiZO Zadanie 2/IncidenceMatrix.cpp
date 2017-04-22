@@ -61,7 +61,6 @@ void IncidenceMatrix::AddEdge(unsigned int origin, unsigned int destination, uns
 	if (IsValidEdge(origin, destination))
 	{
 		//Connect the origin and destination with edge of given weight
-		std::cout << vertices_ << " " << edges_ << std::endl;
 		matrix_[origin][edge_count_] = START;
 		matrix_[destination][edge_count_] = END;
 		weights[edge_count_] = weight;
