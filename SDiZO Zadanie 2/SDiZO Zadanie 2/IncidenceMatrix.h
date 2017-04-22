@@ -2,14 +2,16 @@
 #include <iostream>
 #include <iomanip>
 
+typedef unsigned int uint;
+
 class IncidenceMatrix
 {
 public:
 	IncidenceMatrix();
-	IncidenceMatrix(int vertices_count, int edges_count);
+	IncidenceMatrix(uint vertices_count, uint edges_count);
 	~IncidenceMatrix();
 
-	void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
+	void AddEdge(uint origin, uint destination, uint weight);
 
 	void DisplayMatrix();
 	void DisplayWeights();
@@ -22,12 +24,12 @@ private:
 
 	
 	int **matrix_;
-	unsigned int vertices_;
-	unsigned int edges_;
-	unsigned int edge_count_;
-	unsigned int *weights;
+	uint vertices_;
+	uint edges_;
+	uint edge_count_;
+	uint *weights;
 
-	bool IsValidEdge(unsigned int origin, unsigned int destination);
+	bool IsValidEdge(uint origin, uint destination);
 
 };
 

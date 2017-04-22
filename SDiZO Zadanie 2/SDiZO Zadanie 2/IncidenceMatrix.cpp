@@ -11,7 +11,7 @@ IncidenceMatrix::IncidenceMatrix()
 	matrix_ = new int *[10];
 
 	//Create array to hold the weights of edges
-	weights = new unsigned int[10]();
+	weights = new uint[10]();
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -25,7 +25,7 @@ IncidenceMatrix::IncidenceMatrix()
 }
 
 //Creates incidence matrix with given number vertices and edges
-IncidenceMatrix::IncidenceMatrix(int number_of_vertices, int number_of_edges)
+IncidenceMatrix::IncidenceMatrix(uint number_of_vertices, uint number_of_edges)
 	: vertices_(number_of_vertices)
 	, edges_(number_of_edges)
 	, edge_count_(0)
@@ -33,13 +33,13 @@ IncidenceMatrix::IncidenceMatrix(int number_of_vertices, int number_of_edges)
 	//Create Matrix
 	matrix_ = new int *[number_of_vertices];
 	//Create array to hold the weights of edges
-	weights = new unsigned int[number_of_edges]();
+	weights = new uint[number_of_edges]();
 
-	for (int i = 0; i < number_of_vertices; i++)
+	for (uint i = 0; i < number_of_vertices; i++)
 	{
 		matrix_[i] = new int[number_of_edges];
 		//Mark all rows as NO_EDGE
-		for (int j = 0; j < number_of_edges; j++)
+		for (uint j = 0; j < number_of_edges; j++)
 		{
 			matrix_[i][j] = NO_EDGE;
 		}
@@ -49,14 +49,14 @@ IncidenceMatrix::IncidenceMatrix(int number_of_vertices, int number_of_edges)
 //Free the memory
 IncidenceMatrix::~IncidenceMatrix()
 {
-	for (int i = 0; i < vertices_;i++)
+	for (uint i = 0; i < vertices_;i++)
 	{
 		delete[] matrix_[i];
 	}
 }
 
 //Connects origin and destination with edge of given weight
-void IncidenceMatrix::AddEdge(unsigned int origin, unsigned int destination, unsigned int weight)
+void IncidenceMatrix::AddEdge(uint origin, uint destination, uint weight)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -73,15 +73,15 @@ void IncidenceMatrix::DisplayMatrix()
 {
 	
 	std::cout << "  ";
-	for (int i = 0; i < edges_; i++)
+	for (uint i = 0; i < edges_; i++)
 		std::cout << std::setw(3) << i << " ";
 
 	std::cout << std::endl;
 
-	for (int row = 0; row < vertices_; row++)
+	for (uint row = 0; row < vertices_; row++)
 	{
 		std::cout << row << " ";
-		for (int column = 0; column < edges_; column++)
+		for (uint column = 0; column < edges_; column++)
 			std::cout << std::setw(3) << matrix_[row][column] << " ";
 		std::cout << std::endl;
 	}
@@ -90,17 +90,17 @@ void IncidenceMatrix::DisplayMatrix()
 void IncidenceMatrix::DisplayWeights()
 {
 	std::cout <<std::endl<< std::setw(2) << " ";
-	for (int i = 0; i < edge_count_ ; i++)
+	for (uint i = 0; i < edge_count_ ; i++)
 		std::cout << std::setw(3) << i << " ";
 	std::cout << std::setw(2) << std::endl << " ";
-	for (int i = 0; i < edge_count_ ; i++)
+	for (uint i = 0; i < edge_count_ ; i++)
 		std::cout << std::setw(3) << weights[i] << " ";
 	std::cout << std::endl;
 }
 
 
 
-bool IncidenceMatrix::IsValidEdge(unsigned int origin, unsigned int destination)
+bool IncidenceMatrix::IsValidEdge(uint origin, uint destination)
 {
 	return (origin > vertices_ || destination > vertices_) ? false : true;
 }
