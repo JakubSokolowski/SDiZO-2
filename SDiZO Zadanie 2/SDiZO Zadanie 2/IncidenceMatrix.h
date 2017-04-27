@@ -26,7 +26,7 @@ private:
 	int **matrix_;
 	uint vertices_;
 	uint edges_;
-	uint edge_count_;
+	uint number_of_edges_;
 	uint *weights;
 
 	bool IsValidEdge(uint origin, uint destination);

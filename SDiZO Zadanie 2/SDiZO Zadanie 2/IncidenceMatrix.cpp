@@ -5,7 +5,7 @@
 IncidenceMatrix::IncidenceMatrix()
 	: vertices_(10)
 	, edges_(10)
-	, edge_count_(0)
+	, number_of_edges_(0)
 {
 	//Create Matrix
 	matrix_ = new int *[10];
@@ -28,7 +28,7 @@ IncidenceMatrix::IncidenceMatrix()
 IncidenceMatrix::IncidenceMatrix(uint number_of_vertices, uint number_of_edges)
 	: vertices_(number_of_vertices)
 	, edges_(number_of_edges)
-	, edge_count_(0)
+	, number_of_edges_(0)
 {
 	//Create Matrix
 	matrix_ = new int *[number_of_vertices];
@@ -61,11 +61,11 @@ void IncidenceMatrix::AddEdge(uint origin, uint destination, uint weight)
 	if (IsValidEdge(origin, destination))
 	{
 		//Connect the origin and destination with edge of given weight
-		matrix_[origin][edge_count_] = START;
-		matrix_[destination][edge_count_] = END;
-		weights[edge_count_] = weight;
+		matrix_[origin][number_of_edges_] = START;
+		matrix_[destination][number_of_edges_] = END;
+		weights[number_of_edges_] = weight;
 		
-		++edge_count_;
+		++number_of_edges_;
 	}
 }
 
@@ -90,10 +90,10 @@ void IncidenceMatrix::DisplayMatrix()
 void IncidenceMatrix::DisplayWeights()
 {
 	std::cout <<std::endl<< std::setw(2) << " ";
-	for (uint i = 0; i < edge_count_ ; i++)
+	for (uint i = 0; i < number_of_edges_ ; i++)
 		std::cout << std::setw(3) << i << " ";
 	std::cout << std::setw(2) << std::endl << " ";
-	for (uint i = 0; i < edge_count_ ; i++)
+	for (uint i = 0; i < number_of_edges_ ; i++)
 		std::cout << std::setw(3) << weights[i] << " ";
 	std::cout << std::endl;
 }
