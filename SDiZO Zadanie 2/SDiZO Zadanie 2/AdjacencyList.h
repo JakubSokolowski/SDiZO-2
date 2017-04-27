@@ -1,29 +1,26 @@
 #pragma once
+#include <iostream>
+#include "Array.h"
 
 typedef unsigned int uint;
 
-struct Node
-{
-	uint destination_;
-	struct Node *next_;
-};
-
-struct AdjList
-{
-	Node *head_;
-};
 
 class AdjacencyList
 {
 public:
+
+
+	// Constructors
 
 	AdjacencyList();
 	AdjacencyList(uint vertices);
 	~AdjacencyList();
 
 private:
-	uint vertices_count_;
-	AdjList *list_;	
+
+	Array* list;
+
+
 
 };
 
