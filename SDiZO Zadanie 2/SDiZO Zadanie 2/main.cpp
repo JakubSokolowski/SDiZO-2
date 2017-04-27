@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "IncidenceMatrix.h"
+#include "AdjacencyList.h"
+#include <vector>
 
 
 int main()
@@ -15,6 +17,8 @@ int main()
 	matr.AddEdge(2, 0, 9);
 	matr.DisplayMatrix();
 	matr.DisplayWeights();
+
+
 	getchar();
     return 0;
 }
