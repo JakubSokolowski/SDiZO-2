@@ -1,31 +1,35 @@
 #pragma once
 #include <iostream>
 
-class AdjacencyMatrix
+
+namespace sdizo
 {
-public:
+	class AdjacencyMatrix
+	{
+	public:
 
-	//Constructors & Destructors
+		//Constructors & Destructors
 
-	AdjacencyMatrix();
-	AdjacencyMatrix(unsigned int vertices_count);
-	~AdjacencyMatrix();
+		AdjacencyMatrix();
+		AdjacencyMatrix(unsigned int vertices_count);
+		~AdjacencyMatrix();
 
-	//Edge Management
+		//Edge Management
 
-	void AddEdge(unsigned int origin, unsigned int destination);
-	void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
+		void AddEdge(unsigned int origin, unsigned int destination);
+		void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
 
-	void Display();
+		void Display();
 
-private:
+	private:
 
-	bool IsValidEdge(unsigned int origin, unsigned int destination);
+		bool IsValidEdge(unsigned int origin, unsigned int destination);
 
-	unsigned int vertices_count_;
-	unsigned int **matrix_;
-	bool *visited_;
-	bool is_directed;
+		unsigned int vertices_count_;
+		unsigned int **matrix_;
+		bool *visited_;
+		bool is_directed;
 
-};
+	};
+}
 

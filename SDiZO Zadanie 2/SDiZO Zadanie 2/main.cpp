@@ -5,7 +5,7 @@
 #include "IncidenceMatrix.h"
 #include "AdjacencyList.h"
 
-
+using namespace sdizo;
 int main()
 {
 	IncidenceMatrix matr = IncidenceMatrix(4, 5);

@@ -4,32 +4,35 @@
 
 typedef unsigned int uint;
 
-class IncidenceMatrix
+namespace sdizo
 {
-public:
-	IncidenceMatrix();
-	IncidenceMatrix(uint vertices_count, uint edges_count);
-	~IncidenceMatrix();
+	class IncidenceMatrix
+	{
+	public:
+		IncidenceMatrix();
+		IncidenceMatrix(uint vertices_count, uint edges_count);
+		~IncidenceMatrix();
 
-	void AddEdge(uint origin, uint destination, uint weight);
+		void AddEdge(uint origin, uint destination, uint weight);
 
-	void DisplayMatrix();
-	void DisplayWeights();
+		void DisplayMatrix();
+		void DisplayWeights();
 
-private:
+	private:
 
-	const int START = 1;
-	const int END = -1;
-	const int NO_EDGE = 0;
+		const int START = 1;
+		const int END = -1;
+		const int NO_EDGE = 0;
 
-	
-	int **matrix_;
-	uint vertices_;
-	uint edges_;
-	uint number_of_edges_;
-	uint *weights;
 
-	bool IsValidEdge(uint origin, uint destination);
+		int **matrix_;
+		uint vertices_;
+		uint edges_;
+		uint number_of_edges_;
+		uint *weights;
 
-};
+		bool IsValidEdge(uint origin, uint destination);
 
+	};
+
+}

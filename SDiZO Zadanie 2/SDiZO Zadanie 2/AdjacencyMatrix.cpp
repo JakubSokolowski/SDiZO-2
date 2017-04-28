@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AdjacencyMatrix.h"
 
-
+using namespace sdizo;
 //Creates new adjacency matrix able to hold 10 vertices
 AdjacencyMatrix::AdjacencyMatrix()
 	: vertices_count_(10)
