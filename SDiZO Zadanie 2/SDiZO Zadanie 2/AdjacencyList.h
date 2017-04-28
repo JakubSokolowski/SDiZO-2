@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "Array.h"
 
 typedef unsigned int uint;
 
@@ -17,8 +16,6 @@ public:
 	~AdjacencyList();
 
 private:
-
-	Array* list;
 
 
 
