@@ -1400,7 +1400,7 @@ public:
 	void vector<float>::Clear() noexcept {
 		vector_size_ = 0;
 	}
-
+	//ipla
 	template <>
 	void vector<double>::Clear() noexcept {
 		vector_size_ = 0;
