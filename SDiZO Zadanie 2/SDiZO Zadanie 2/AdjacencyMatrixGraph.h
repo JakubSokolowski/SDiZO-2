@@ -4,15 +4,15 @@
 
 namespace sdizo
 {
-	class AdjacencyMatrix
+	class AdjacencyMatrixGraph
 	{
 	public:
 
 		//Constructors & Destructors
 
-		AdjacencyMatrix();
-		AdjacencyMatrix(unsigned int vertices_count);
-		~AdjacencyMatrix();
+		AdjacencyMatrixGraph();
+		AdjacencyMatrixGraph(unsigned int vertices_count);
+		~AdjacencyMatrixGraph();
 
 		//Edge Management
 

@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "AdjacencyMatrix.h"
+#include "AdjacencyMatrixGraph.h"
 
 using namespace sdizo;
 //Creates new adjacency matrix able to hold 10 vertices
-AdjacencyMatrix::AdjacencyMatrix()
+AdjacencyMatrixGraph::AdjacencyMatrixGraph()
 	: vertices_count_(10)
 {
 	visited_ = new bool[vertices_count_];
@@ -22,7 +22,7 @@ AdjacencyMatrix::AdjacencyMatrix()
 }
 
 //Creates new adjacency matrix able to hold given number ov vertices
-AdjacencyMatrix::AdjacencyMatrix(unsigned int vertices_count)
+AdjacencyMatrixGraph::AdjacencyMatrixGraph(unsigned int vertices_count)
 	: vertices_count_(vertices_count)
 {
 	visited_ = new bool[vertices_count];
@@ -41,7 +41,7 @@ AdjacencyMatrix::AdjacencyMatrix(unsigned int vertices_count)
 }
 
 //Frees the memory
-AdjacencyMatrix::~AdjacencyMatrix()
+AdjacencyMatrixGraph::~AdjacencyMatrixGraph()
 {
 	for (int i = 0; i < vertices_count_; ++i)
 	{
@@ -50,7 +50,7 @@ AdjacencyMatrix::~AdjacencyMatrix()
 }
 
 //Connects origin adn destination with edge. Only in unweighted grapgs
-void AdjacencyMatrix::AddEdge(unsigned int origin, unsigned int destination)
+void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -59,7 +59,7 @@ void AdjacencyMatrix::AddEdge(unsigned int origin, unsigned int destination)
 }
 
 //Connects origin and destinatnion with edge of given weight
-void AdjacencyMatrix::AddEdge(unsigned int origin, unsigned int destination, unsigned int weight)
+void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination, unsigned int weight)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -68,7 +68,7 @@ void AdjacencyMatrix::AddEdge(unsigned int origin, unsigned int destination, uns
 }
 
 //Displays the matrix
-void AdjacencyMatrix::Display()
+void AdjacencyMatrixGraph::Display()
 {
 	int row = 0, column = 0;
 
@@ -87,7 +87,7 @@ void AdjacencyMatrix::Display()
 }
 
 //Checks if given edge can be constructed
-bool AdjacencyMatrix::IsValidEdge(unsigned int origin, unsigned int destination)
+bool AdjacencyMatrixGraph::IsValidEdge(unsigned int origin, unsigned int destination)
 {
 	return (origin > vertices_count_ || destination > vertices_count_) ? false : true;
 }
