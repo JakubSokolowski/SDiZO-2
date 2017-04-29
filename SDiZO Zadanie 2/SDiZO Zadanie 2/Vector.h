@@ -563,9 +563,9 @@ public:
 		return iit;
 	}
 
-	//The vector is extended by inserting new elements before the element at the specified position
-	//The elements added are moved. Reallocates if needed
-	//Returns an iterator that points to the first of newly inserted elements
+	//The vector is extended by inserting new element before the element at the specified by iterator
+	//The element added is moved using std::move . Reallocates if needed
+	//Returns an iterator that points to the first of newly inserted element
 	template <typename T>
 	typename Vector<T>::iterator Vector<T>::Insert(typename Vector<T>::const_iterator it, T &&val) {
 		iterator iit = &arr_[it - arr_];
@@ -579,6 +579,9 @@ public:
 		return iit;
 	}
 
+	//The vector is extended by inserting new elements before the element at the specified by iterator
+	//The number of elements added is specified by cnt. The elements are copied from val. Reallocates if needed
+	//Returns an iterator that points to the first of newly inserted elements
 	template <typename T>
 	typename Vector<T>::iterator Vector<T>::Insert(typename Vector<T>::const_iterator it, typename Vector<T>::size_type cnt, const T &val) {
 		iterator f = &arr_[it - arr_];
@@ -594,6 +597,9 @@ public:
 		return f;
 	}
 
+	//The vector is extended by inserting new elements before the element at the specified by iterator it
+	//The number of elements added is specified by subtraction of iterators. The values are pointed by iterators
+	//Returns an iterator that points to the first of newly inserted elements
 	template <typename T>
 	template <class InputIt>
 	typename Vector<T>::iterator Vector<T>::Insert(typename Vector<T>::const_iterator it, InputIt first, InputIt last) {
@@ -611,6 +617,9 @@ public:
 		return f;
 	}
 
+	//The vector is extended by inserting new elements before the element at the specified by iterator
+	//The number and values of iterators are specified by initializer_list
+	//Returns an iterator that points to the first of newly inserted elements
 	template <typename T>
 	typename Vector<T>::iterator Vector<T>::Insert(typename Vector<T>::const_iterator it, std::initializer_list<T> lst) {
 		size_type cnt = lst.size();
@@ -630,6 +639,8 @@ public:
 		return f;
 	}
 
+	//Removes single element from vector
+	//Returns an iterator pointing to the new location of the element that followed the last element erased by the function call.
 	template <typename T>
 	typename Vector<T>::iterator Vector<T>::Erase(typename Vector<T>::const_iterator it) {
 		iterator iit = &arr_[it - arr_];
@@ -639,6 +650,8 @@ public:
 		return iit;
 	}
 
+	//Removes range of elements ([first,last])
+	//Returns an iterator pointing to the new location of the element that followed the last element erased by the function call.
 	template <typename T>
 	typename Vector<T>::iterator Vector<T>::Erase(typename Vector<T>::const_iterator first, typename Vector<T>::const_iterator last) {
 		iterator f = &arr_[first - arr_];
@@ -650,6 +663,7 @@ public:
 		return f;
 	}
 
+	//Exchanges the contents of vectors
 	template <typename T>
 	void Vector<T>::SwapVectors(Vector<T> &rhs) {
 		size_t tvec_sz = vector_size_,
@@ -665,6 +679,7 @@ public:
 		rhs.arr_ = tarr;
 	}
 
+	//Removes and destroys all elements from vector, leaving the container with size of 0
 	template <typename T>
 	void Vector<T>::Clear() noexcept {
 		size_type i;
@@ -673,7 +688,7 @@ public:
 		vector_size_ = 0;
 	}
 
-
+	//Compares sizes and elements, returns true if they match
 	template <typename T>
 	bool Vector<T>::operator == (const Vector<T> &rhs) const {
 		if (vector_size_ != rhs.vector_size_) return false;
@@ -684,6 +699,7 @@ public:
 		return true;
 	}
 
+	//Compares sizes and elements, returns true if they mismatch
 	template <typename T>
 	bool Vector<T>::operator != (const Vector<T> &rhs) const {
 		if (vector_size_ != rhs.vector_size_) return true;
@@ -729,7 +745,8 @@ public:
 				return arr_[i] > rhs.arr_[i];
 		return vector_size_ >= rhs.vector_size_;
 	}
-
+	
+	//Displays size, capacity and all the elements separted by whitespace
 	template<typename T>
 	inline void Vector<T>::Display() noexcept
 	{
