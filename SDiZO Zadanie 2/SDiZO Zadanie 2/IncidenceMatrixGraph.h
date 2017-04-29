@@ -6,12 +6,12 @@ typedef unsigned int uint;
 
 namespace sdizo
 {
-	class IncidenceMatrix
+	class IncidenceMatrixGraph
 	{
 	public:
-		IncidenceMatrix();
-		IncidenceMatrix(uint vertices_count, uint edges_count);
-		~IncidenceMatrix();
+		IncidenceMatrixGraph();
+		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
+		~IncidenceMatrixGraph();
 
 		void AddEdge(uint origin, uint destination, uint weight);
 

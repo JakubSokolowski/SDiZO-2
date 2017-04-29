@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "IncidenceMatrix.h"
+#include "IncidenceMatrixGraph.h"
 
 using namespace sdizo;
 
 //Base constructor, creates matrix with 10 vertices and 10 edges
-IncidenceMatrix::IncidenceMatrix()
+IncidenceMatrixGraph::IncidenceMatrixGraph()
 	: vertices_(10)
 	, edges_(10)
 	, number_of_edges_(0)
@@ -27,7 +27,7 @@ IncidenceMatrix::IncidenceMatrix()
 }
 
 //Creates incidence matrix with given number vertices and edges
-IncidenceMatrix::IncidenceMatrix(uint number_of_vertices, uint number_of_edges)
+IncidenceMatrixGraph::IncidenceMatrixGraph(uint number_of_vertices, uint number_of_edges)
 	: vertices_(number_of_vertices)
 	, edges_(number_of_edges)
 	, number_of_edges_(0)
@@ -49,7 +49,7 @@ IncidenceMatrix::IncidenceMatrix(uint number_of_vertices, uint number_of_edges)
 }
 
 //Free the memory
-IncidenceMatrix::~IncidenceMatrix()
+IncidenceMatrixGraph::~IncidenceMatrixGraph()
 {
 	for (uint i = 0; i < vertices_;i++)
 	{
@@ -58,7 +58,7 @@ IncidenceMatrix::~IncidenceMatrix()
 }
 
 //Connects origin and destination with edge of given weight
-void IncidenceMatrix::AddEdge(uint origin, uint destination, uint weight)
+void IncidenceMatrixGraph::AddEdge(uint origin, uint destination, uint weight)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -71,7 +71,7 @@ void IncidenceMatrix::AddEdge(uint origin, uint destination, uint weight)
 	}
 }
 
-void IncidenceMatrix::DisplayMatrix()
+void IncidenceMatrixGraph::DisplayMatrix()
 {
 	
 	std::cout << "  ";
@@ -89,7 +89,7 @@ void IncidenceMatrix::DisplayMatrix()
 	}
 }
 
-void IncidenceMatrix::DisplayWeights()
+void IncidenceMatrixGraph::DisplayWeights()
 {
 	std::cout <<std::endl<< std::setw(2) << " ";
 	for (uint i = 0; i < number_of_edges_ ; i++)
@@ -102,7 +102,7 @@ void IncidenceMatrix::DisplayWeights()
 
 
 
-bool IncidenceMatrix::IsValidEdge(uint origin, uint destination)
+bool IncidenceMatrixGraph::IsValidEdge(uint origin, uint destination)
 {
 	return (origin > vertices_ || destination > vertices_) ? false : true;
 }
