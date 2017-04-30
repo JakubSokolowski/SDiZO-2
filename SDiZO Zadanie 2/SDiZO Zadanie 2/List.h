@@ -1,8 +1,7 @@
 #pragma once
 #include <iostream>
-#include <iterator>
 
-namespace sdz
+namespace dts
 {
 	template <typename T>
 	struct ListNode
@@ -56,7 +55,6 @@ namespace sdz
 		private:
 			ListNode<T> *pos_;
 		};
-
 		iterator begin()
 		{
 			return iterator(head_);
@@ -108,6 +106,7 @@ namespace sdz
 			return reverse_iterator(0);
 		}
 		
+
 		List()
 			: head_(0)
 			, tail_(0)
@@ -125,9 +124,10 @@ namespace sdz
 		void PopFront();
 		T &front();
 		T &back();
+
 		
 
-		//Iterators
+	
 
 	private:
 		ListNode<T> *head_;
@@ -247,6 +247,10 @@ namespace sdz
 	{
 		returnt tail_->data_;
 	}
+
+	
+
+	
 
 	
 
