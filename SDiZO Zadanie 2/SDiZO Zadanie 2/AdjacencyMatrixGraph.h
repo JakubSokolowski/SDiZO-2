@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-namespace sdz
+namespace sdizo
 {
 	class AdjacencyMatrixGraph
 	{
@@ -19,7 +19,7 @@ namespace sdz
 		void AddEdge(unsigned int origin, unsigned int destination);
 		void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
 
-		void DisplayGraph();
+		void Display();
 
 	private:
 

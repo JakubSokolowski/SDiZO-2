@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AdjacencyMatrixGraph.h"
 
-using namespace sdz;
+using namespace sdizo;
 //Creates new adjacency matrix able to hold 10 vertices
 AdjacencyMatrixGraph::AdjacencyMatrixGraph()
 	: vertices_count_(10)
@@ -68,7 +68,7 @@ void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination
 }
 
 //Displays the matrix
-void AdjacencyMatrixGraph::DisplayGraph()
+void AdjacencyMatrixGraph::Display()
 {
 	int row = 0, column = 0;
 

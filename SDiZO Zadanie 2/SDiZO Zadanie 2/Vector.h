@@ -11,9 +11,9 @@
 
 #define SDIZO_VECTOR_MAX_SIZE 1000000000
 
-namespace sdz {
+namespace sdizo {
 
-template <typename T>
+	template <typename T>
 class Vector {
 public:
 		// types:
@@ -104,7 +104,7 @@ public:
 		bool operator >= (const Vector<T> &) const;
 
 		//Utilty & Display
-		void DisplayGraph() noexcept;
+		void Display() noexcept;
 
 	private:
 		size_type reserved_size_ = 4;
@@ -220,7 +220,6 @@ public:
 		for (i = 0; i < other.vector_size_; ++i)
 			arr_[i] = std::move(other.arr_[i]);
 		vector_size_ = other.vector_size_;
-		return (*this);
 	}
 
 	//Initializer list assignment operator
@@ -749,7 +748,7 @@ public:
 	
 	//Displays size, capacity and all the elements separted by whitespace
 	template<typename T>
-	inline void Vector<T>::DisplayGraph() noexcept
+	inline void Vector<T>::Display() noexcept
 	{
 		std::cout << "Size: " << vector_size_ << " Capacity: " << GetCapacity();
 		for (auto iter = cbegin(); iter != cend(); iter++)
