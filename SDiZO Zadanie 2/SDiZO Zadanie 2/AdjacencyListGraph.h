@@ -14,7 +14,7 @@ namespace sdz
 		AdjacencyListGraph(uint vertices, bool is_directed);
 		~AdjacencyListGraph();
 
-		void AddConnection(uint v1, uint id, uint weight);
+		void AddEdge(uint v1, uint id, uint weight);
 		void DisplayGraph();
 		void DisplayConnections(uint v);
 	private:
