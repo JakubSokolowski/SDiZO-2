@@ -1,6 +1,8 @@
 #pragma once
 #include "Vertex.h"
 #include "List.h"
+#include "Queue.h"
+#include <iostream>
 
 	
 namespace sdz
@@ -14,10 +16,14 @@ namespace sdz
 		AdjacencyListGraph(uint vertices, bool is_directed);
 		~AdjacencyListGraph();
 
-		void AddEdge(uint v1, uint id, uint weight);
+		void AddEdge(uint source, uint destination, uint weight);
 		void DisplayGraph();
-		void DisplayConnections(uint v);
+		void BDF(Vertex start);
+		Vertex GetVertex(uint vertex_id);
+		
 	private:
+
+		void DisplayConnections(uint v);
 
 		bool is_directed_;
 		uint vertices_;
