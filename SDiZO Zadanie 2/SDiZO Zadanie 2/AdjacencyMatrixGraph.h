@@ -6,27 +6,28 @@ namespace sdz
 {
 	class AdjacencyMatrixGraph
 	{
+		typedef unsigned int uint;
 	public:
 
 		//Constructors & Destructors
 
 		AdjacencyMatrixGraph();
-		AdjacencyMatrixGraph(unsigned int vertices_count);
+		AdjacencyMatrixGraph(uint vertices_count);
 		~AdjacencyMatrixGraph();
 
 		//Edge Management
 
-		void AddEdge(unsigned int origin, unsigned int destination);
-		void AddEdge(unsigned int origin, unsigned int destination, unsigned int weight);
+		void AddEdge(uint origin, uint destination);
+		void AddEdge(uint origin, uint destination, uint weight);
 
 		void Display();
 
 	private:
 
-		bool IsValidEdge(unsigned int origin, unsigned int destination);
+		bool IsValidEdge(uint origin, uint destination);
 
-		unsigned int vertices_count_;
-		unsigned int **matrix_;
+		uint vertices_count_;
+		uint **matrix_;
 		bool *visited_;
 		bool is_directed;
 

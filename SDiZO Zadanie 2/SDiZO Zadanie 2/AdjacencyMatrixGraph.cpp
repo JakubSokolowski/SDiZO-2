@@ -8,13 +8,13 @@ AdjacencyMatrixGraph::AdjacencyMatrixGraph()
 {
 	visited_ = new bool[vertices_count_];
 	//Create Matrix
-	matrix_ = new unsigned int *[vertices_count_];
+	matrix_ = new uint *[vertices_count_];
 	//Create Rows
-	for (int i = 0; i < vertices_count_; i++)
+	for (uint i = 0; i < vertices_count_; i++)
 	{
-		matrix_[i] = new unsigned int[vertices_count_];
+		matrix_[i] = new uint[vertices_count_];
 		//Fill the rows with 0
-		for (int j = 0; j < vertices_count_; j++)
+		for (uint j = 0; j < vertices_count_; j++)
 		{
 			matrix_[i][j] = 0;
 		}
@@ -22,18 +22,18 @@ AdjacencyMatrixGraph::AdjacencyMatrixGraph()
 }
 
 //Creates new adjacency matrix able to hold given number ov vertices
-AdjacencyMatrixGraph::AdjacencyMatrixGraph(unsigned int vertices_count)
+AdjacencyMatrixGraph::AdjacencyMatrixGraph(uint vertices_count)
 	: vertices_count_(vertices_count)
 {
 	visited_ = new bool[vertices_count];
 	//Create Matrix
-	matrix_ = new unsigned int *[vertices_count];
+	matrix_ = new uint *[vertices_count];
 	//Create Rows
-	for (int i = 0; i < vertices_count; i++)
+	for (uint i = 0; i < vertices_count; i++)
 	{
-		matrix_[i] = new unsigned int[vertices_count];
+		matrix_[i] = new uint[vertices_count];
 		//Fill the rows with 0
-		for (int j = 0; j < vertices_count; j++)
+		for (uint j = 0; j < vertices_count; j++)
 		{
 			matrix_[i][j] = 0;
 		}
@@ -43,14 +43,14 @@ AdjacencyMatrixGraph::AdjacencyMatrixGraph(unsigned int vertices_count)
 //Frees the memory
 AdjacencyMatrixGraph::~AdjacencyMatrixGraph()
 {
-	for (int i = 0; i < vertices_count_; ++i)
+	for (uint i = 0; i < vertices_count_; ++i)
 	{
 		delete[] matrix_[i];
 	}
 }
 
 //Connects origin adn destination with edge. Only in unweighted grapgs
-void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination)
+void AdjacencyMatrixGraph::AddEdge(uint origin, uint destination)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -59,7 +59,7 @@ void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination
 }
 
 //Connects origin and destinatnion with edge of given weight
-void AdjacencyMatrixGraph::AddEdge(unsigned int origin, unsigned int destination, unsigned int weight)
+void AdjacencyMatrixGraph::AddEdge(uint origin, uint destination, uint weight)
 {
 	if (IsValidEdge(origin, destination))
 	{
@@ -87,7 +87,7 @@ void AdjacencyMatrixGraph::Display()
 }
 
 //Checks if given edge can be constructed
-bool AdjacencyMatrixGraph::IsValidEdge(unsigned int origin, unsigned int destination)
+bool AdjacencyMatrixGraph::IsValidEdge(uint origin, uint destination)
 {
 	return (origin > vertices_count_ || destination > vertices_count_) ? false : true;
 }
