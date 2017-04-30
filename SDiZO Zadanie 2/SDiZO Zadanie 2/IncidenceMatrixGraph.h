@@ -2,12 +2,14 @@
 #include <iostream>
 #include <iomanip>
 
-typedef unsigned int uint;
 
 namespace sdz
 {
 	class IncidenceMatrixGraph
 	{
+		typedef unsigned int uint;
+
+
 	public:
 		IncidenceMatrixGraph();
 		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
