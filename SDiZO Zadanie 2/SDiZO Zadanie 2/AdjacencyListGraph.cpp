@@ -21,7 +21,7 @@ AdjacencyListGraph::~AdjacencyListGraph()
 {
 }
 
-void sdz::AdjacencyListGraph::AddConnection(uint v1, uint v2, uint weight)
+void sdz::AdjacencyListGraph::AddEdge(uint v1, uint v2, uint weight)
 {
 	Vertex ver = Vertex(v2, weight);
 	adj_tab_[v1].PushBack(ver);
