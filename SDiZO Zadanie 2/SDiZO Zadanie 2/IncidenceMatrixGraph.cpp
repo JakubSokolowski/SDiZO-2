@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "IncidenceMatrixGraph.h"
 
-using namespace sdizo;
+using namespace sdz;
 
 //Base constructor, creates matrix with 10 vertices and 10 edges
 IncidenceMatrixGraph::IncidenceMatrixGraph()

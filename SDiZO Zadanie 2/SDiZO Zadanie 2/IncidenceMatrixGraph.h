@@ -4,7 +4,7 @@
 
 typedef unsigned int uint;
 
-namespace sdizo
+namespace sdz
 {
 	class IncidenceMatrixGraph
 	{
