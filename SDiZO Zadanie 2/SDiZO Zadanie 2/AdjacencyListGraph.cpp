@@ -1,19 +1,26 @@
 #include "stdafx.h"
 #include "AdjacencyListGraph.h"
 
-using namespace sdz;
+using namespace SDZ;
 
 AdjacencyListGraph::AdjacencyListGraph()
 {
-	adj_tab_ = new dts::List<Vertex>[10];
+	adj_tab_ = new Vertex[10];
 }
 
-sdz::AdjacencyListGraph::AdjacencyListGraph(uint vertices,bool is_directed)
+SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices,bool is_directed)
 {
 	
 	vertices_ = vertices;
 	is_directed_ = is_directed;
-	adj_tab_ = new dts::List<Vertex>[vertices_];
+	adj_tab_ = new Vertex[vertices_];
+
+	//Assign the ids 0 ... vertices-1
+	for (uint it = 0; it < vertices_; it++)
+	{
+		adj_tab_[it].vertex_id_ = it;
+		adj_tab_[it].visited_ = false;
+	}		
 }
 
 
@@ -21,73 +28,55 @@ AdjacencyListGraph::~AdjacencyListGraph()
 {
 }
 
-void sdz::AdjacencyListGraph::AddEdge(uint v1, uint v2, uint weight)
+void SDZ::AdjacencyListGraph::AddEdge(uint source, uint destination, uint weight)
 {
-	Vertex ver = Vertex(v2, weight);
-	adj_tab_[v1].PushBack(ver);
+	adj_tab_[source].AddEdge(destination, weight);
 	if (!is_directed_)
-	{
-		ver.vertex_id_ = v1;
-		adj_tab_[v2].PushBack(ver);
-	}
-		
+		adj_tab_[destination].AddEdge(source, weight);
 }
 
-void sdz::AdjacencyListGraph::DisplayGraph()
+void SDZ::AdjacencyListGraph::DisplayGraph()
 {
 	for (uint it = 0; it < vertices_; it++)
 	{
-		std::cout << "Connections for vertex " << it << std::endl;
-		DisplayConnections(it);
+		adj_tab_[it].DisplayList();
 	}
 }
 
-void sdz::AdjacencyListGraph::BDF(Vertex s)
+void SDZ::AdjacencyListGraph::BDF(uint s)
 {
-	//List of visited vertices
-	bool *visited = new bool[vertices_];
+	DTS::Queue<uint> queue;
+	uint current =s;
 
-	//Mark all vertices as not visited
-	for (uint i = 0; i < vertices_; i++)
-		visited[i] = false;
-
-	dts::Queue<Vertex> queue;
-	visited[s.vertex_id_] = true;
-	queue.PushBack(s);
+	//Mark the current node as visited and enqueue it
+	adj_tab_[s].visited_ = true;
+	queue.PushBack(current);
+	
 
 	while (queue.GetSize()!=0)
 	{
 		//Deque a vertex from queue and print it
-		s = queue.GetFront();
-		std::cout << s.vertex_id_ << " ";
+		current = queue.GetFront();
+		std::cout << current << " ";
 		queue.PopFront();
+
 		//Get all adjacent vertices of the dequeed vertex s
 		//If a adjacent has not been visited, then mark it visited and enque it
-		for (auto it = adj_tab_[s.vertex_id_].begin(); it != adj_tab_[s.vertex_id_].end(); it++)
-		{
-			if (!visited[it->vertex_id_])
+		for (auto it = adj_tab_[current].list_.begin();it!= adj_tab_[current].list_.end();it++)
+		{ 
+			if (!adj_tab_[it->destination_id].visited_)
 			{
-				visited[it->vertex_id_] = true;
-				queue.PushBack(*it);
+				adj_tab_[it->destination_id].visited_ = true;
+				queue.PushBack(it->destination_id);
 			}
 		}
 	}
-
-	
-
-
-
 }
 
-Vertex sdz::AdjacencyListGraph::GetVertex(uint vertex_id)
+Vertex SDZ::AdjacencyListGraph::GetVertex(uint vertex_id)
 {
 	return Vertex();
 	
 }
 
-void sdz::AdjacencyListGraph::DisplayConnections(uint v)
-{
-	for (auto it = adj_tab_[v].begin(); it != adj_tab_[v].end(); it++)
-		std::cout<< it->vertex_id_ <<"-"<< it->edge_weight_<<" "; 
-	std::cout << std::endl;
-}
+

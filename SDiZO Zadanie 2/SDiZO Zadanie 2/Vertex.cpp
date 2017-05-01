@@ -7,10 +7,9 @@ sdz::Vertex::Vertex()
 {}
 
 sdz::Vertex::Vertex(uint id, uint weight)
-	:vertex_id_(id)
-	,edge_weight_(weight)
+	: vertex_id_(id)
+	, edge_weight_(weight)
 {}
 
 sdz::Vertex::~Vertex()
-{
-}
+{}
