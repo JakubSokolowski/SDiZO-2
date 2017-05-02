@@ -18,8 +18,11 @@ namespace SDZ
 
 		void AddEdge(uint source, uint destination, uint weight);
 		void DisplayGraph();
-		void BDF(uint start);
+		void BFT(uint start);
 		Vertex GetVertex(uint vertex_id);
+
+		void MarkAllVisited();
+		void MarkAllNotVisited();
 		
 	private:
 
