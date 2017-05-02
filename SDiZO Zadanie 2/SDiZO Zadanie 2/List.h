@@ -1,7 +1,5 @@
 #pragma once
-#include <iostream>
 
-//Data Structure Namespace
 namespace DTS
 {
 	template <typename T>
@@ -105,8 +103,7 @@ namespace DTS
 		reverse_iterator rend()
 		{
 			return reverse_iterator(0);
-		}
-		
+		}		
 
 		List()
 			: head_(0)
@@ -123,19 +120,15 @@ namespace DTS
 		void Remove(ListNode<T> *position);
 		void PopBack();
 		void PopFront();
-		T &front();
-		T &back();
-
-		
-
-	
+		T &GetFront();
+		T &GetBack();
 
 	private:
+
 		ListNode<T> *head_;
 		ListNode<T> *tail_;
 
 		int size_;
-
 	};
 
 
@@ -208,7 +201,7 @@ namespace DTS
 		if (pos)
 		{
 			if (pos->prev_)
-				pos->prev_->next = pos->next_;
+				pos->prev_->next_ = pos->next_;
 
 			if (pos->next_)
 				pos->next_->prev_ = pos->prev_;
@@ -238,22 +231,14 @@ namespace DTS
 	}
 
 	template<typename T>
-	inline T & List<T>::front()
+	inline T & List<T>::GetFront()
 	{
 		return head_->data_;
 	}
 
 	template<typename T>
-	inline T & List<T>::back()
+	inline T & List<T>::GetBack()
 	{
 		returnt tail_->data_;
 	}
-
-	
-
-	
-
-	
-
-
 }
