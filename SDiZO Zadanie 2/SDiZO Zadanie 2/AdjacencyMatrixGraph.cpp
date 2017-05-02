@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AdjacencyMatrixGraph.h"
 
-using namespace sdz;
+using namespace SDZ;
 //Creates new adjacency matrix able to hold 10 vertices
 AdjacencyMatrixGraph::AdjacencyMatrixGraph()
 	: vertices_count_(10)

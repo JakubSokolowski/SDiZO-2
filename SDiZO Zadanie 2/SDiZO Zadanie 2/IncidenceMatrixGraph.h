@@ -3,7 +3,7 @@
 #include <iomanip>
 
 
-namespace sdz
+namespace SDZ
 {
 	class IncidenceMatrixGraph
 	{

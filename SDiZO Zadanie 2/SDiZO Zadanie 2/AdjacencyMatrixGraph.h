@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-namespace sdz
+namespace SDZ
 {
 	class AdjacencyMatrixGraph
 	{

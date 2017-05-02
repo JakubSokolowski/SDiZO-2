@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 
-namespace dts
+//Data Structure Namespace
+namespace DTS
 {
 	template <typename T>
 	struct ListNode

@@ -11,7 +11,7 @@
 
 #define SDIZO_VECTOR_MAX_SIZE 1000000000
 
-namespace dts {
+namespace DTS {
 
 	template <typename T>
 	class Queue {

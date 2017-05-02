@@ -5,7 +5,7 @@
 #include <iostream>
 
 	
-namespace sdz
+namespace SDZ
 {
 	class AdjacencyListGraph
 	{
@@ -18,16 +18,14 @@ namespace sdz
 
 		void AddEdge(uint source, uint destination, uint weight);
 		void DisplayGraph();
-		void BDF(Vertex start);
+		void BDF(uint start);
 		Vertex GetVertex(uint vertex_id);
 		
 	private:
 
-		void DisplayConnections(uint v);
-
 		bool is_directed_;
 		uint vertices_;
-		dts::List<Vertex> *adj_tab_;
+		Vertex *adj_tab_;
 
 	};
 
