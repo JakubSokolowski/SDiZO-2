@@ -24,6 +24,7 @@ namespace SDZ
 		~Vertex();
 
 		void AddEdge(uint destination, uint weight);
+		void DisplayListWithWeights();
 		void DisplayList();
 
 		Vertex & operator = (const Vertex&);
