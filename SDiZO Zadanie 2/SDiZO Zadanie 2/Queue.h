@@ -22,13 +22,14 @@ namespace DTS
 	public:
 		Queue()
 			: head_(0)
+			, tail_(0)
 			, size_(0)
 		{}
 		~Queue();
 
 		int GetSize() { return size_; }
+		bool IsEmpty() { return size_ == 0; }
 
-		
 		void PushBack(const T &e);
 		void PopFront();
 		T &GetFront();
@@ -37,6 +38,7 @@ namespace DTS
 
 		QueueNode<T>* Insert(const T& e, QueueNode<T> *pos);
 		void Remove(QueueNode<T> *position);
+
 		QueueNode<T> *head_;
 		QueueNode<T> *tail_;
 
@@ -78,7 +80,6 @@ namespace DTS
 	template<typename T>
 	inline void Queue<T>::Remove(QueueNode<T>* pos)
 	{
-
 		if (pos)
 		{
 			if (pos->prev_)
