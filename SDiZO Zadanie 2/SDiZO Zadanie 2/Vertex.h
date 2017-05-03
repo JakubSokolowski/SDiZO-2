@@ -27,8 +27,10 @@ namespace SDZ
 		void DisplayListWithWeights();
 		void DisplayList();
 
+		bool IsConnected(uint destination);
+
+		void SetCoordinates(uint x, uint y);
+
 		Vertex & operator = (const Vertex&);
 	};
-
-
 }

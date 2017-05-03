@@ -26,7 +26,7 @@ void SDZ::Vertex::DisplayListWithWeights()
 {
 	std::cout << "Adjacency List for Vertex " << vertex_id_ << std::endl;
 	for (auto it = list_.begin(); it != list_.end(); it++)
-		std::cout << it->destination_id << ":" << it->weight_ << " ";
+		std::cout << it->destination_id << "-" << it->weight_ << "  ";
 	std::cout << std::endl;
 }
 
@@ -36,6 +36,22 @@ void SDZ::Vertex::DisplayList()
 	for (auto it = list_.begin(); it != list_.end(); it++)
 		std::cout << it->destination_id <<" ";
 	std::cout << std::endl;
+}
+
+bool SDZ::Vertex::IsConnected(uint destination)
+{
+	for (auto it = list_.begin(); it != list_.end(); it++)
+	{
+		if (destination == it->destination_id)
+			return true;
+	}
+	return false;
+}
+
+void SDZ::Vertex::SetCoordinates(uint x, uint y)
+{
+	x_ = x;
+	y_ = y;
 }
 
 SDZ::Vertex & SDZ::Vertex::operator=(const Vertex &other)
