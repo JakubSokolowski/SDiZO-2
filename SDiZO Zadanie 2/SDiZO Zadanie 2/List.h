@@ -110,6 +110,11 @@ namespace DTS
 			, tail_(0)
 			, size_(0)
 		{}
+		List(const List<T> &);
+		List(List<T> &&) noexcept;
+		List<T> operator = (const List<T> &);
+		List<T> operator = (List<T> &&);
+		
 		~List();
 
 		int GetSize() { return size_; }
@@ -132,6 +137,51 @@ namespace DTS
 	};
 
 
+
+	template<typename T>
+	inline List<T>::List(const List<T>&other)
+	{
+		head_ = 0;
+		tail_ = 0;
+		size_ = 0;
+		for (ListNode<T> *current = other.head_; current != 0; current = current->next_)
+			PushBack(current->data_);
+	}
+
+	template<typename T>
+	inline List<T>::List(List<T>&&other) noexcept
+	{
+		head_ = 0;
+		tail_ = 0;
+		size_ = 0;
+
+		for (ListNode<T> *current = other.head_; current != 0; current = current->next_)
+		{
+			PushBack(current->data_);
+		}		
+	}
+
+	template<typename T>
+	inline List<T> List<T>::operator=(const List<T>&other)
+	{
+		head_ = 0;
+		tail_ = 0;
+		size_ = 0;
+
+		for (ListNode<T> *current = other.head_; current != 0; current = current->next_)
+		{
+			PushBack(current->data_);
+		}
+			
+		return *this;
+	}
+
+	template<typename T>
+	inline List<T> List<T>::operator=(List<T>&&)
+	{
+		std::cout << "lmao2";
+		return List<T>();
+	}
 
 	template<typename T>
 	inline List<T>::~List()
