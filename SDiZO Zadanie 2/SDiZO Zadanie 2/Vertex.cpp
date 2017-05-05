@@ -5,12 +5,16 @@ SDZ::Vertex::Vertex()
 	: vertex_id_(0)
 	, list_()
 	, visited_(false)
+	, is_open_(false)
+	, is_closed_(false)
 {}
 
 SDZ::Vertex::Vertex(uint id)
 	: vertex_id_(id)
 	, list_()
 	, visited_(false)
+	, is_open_(false)
+	, is_closed_(false)
 {}
 
 SDZ::Vertex::~Vertex()
@@ -48,6 +52,15 @@ bool SDZ::Vertex::IsConnected(uint destination)
 	return false;
 }
 
+uint SDZ::Vertex::GetConnectionWeight(uint destination)
+{
+	for (auto it = list_.begin(); it != list_.end(); it++)
+	{
+		if (destination == it->destination_id)
+			return it->weight_;
+	}
+}
+
 void SDZ::Vertex::SetCoordinates(uint x, uint y)
 {
 	x_ = x;
@@ -60,6 +73,11 @@ SDZ::Vertex & SDZ::Vertex::operator=(const Vertex &other)
 	visited_ = other.visited_;
 	list_ = std::move(other.list_);
 	return *this;
+}
+
+void SDZ::Vertex::UpadatePriority()
+{
+	
 }
 
 
