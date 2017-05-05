@@ -1,18 +1,18 @@
+#pragma once
 #include <iostream>
 #include <utility>
 #include "Vector.h"
 
-
-namespace DTS {	
+namespace DTS {
 
 	//Priority queue that uses std::pair as Queue Node and min binary heap as internal data structure
 	//T - type of node
 	//P - priority, P must overload operator "<"
 	//First element of the queue is the element of lowest priority
-	template <typename T,typename P>
+	template <typename T, typename P>
 	class PriorityQueue {
-		
-		Vector<std::pair<T,P>> list;
+
+		Vector<std::pair<T, P>> list;
 
 		void ShiftUp(int index);
 		void ShiftDown(int index);
@@ -21,12 +21,12 @@ namespace DTS {
 		int GetRightChild(int parent);
 		int GetParent(int child);
 		void MakeHeap();
-		
+
 	public:
 
 		PriorityQueue();
-		void Insert(T,P);
-		
+		void Insert(T, P);
+
 		void UpdatePriority(int index, P priority);
 		P GetPriority(int index);
 		void PopFront();
@@ -37,14 +37,14 @@ namespace DTS {
 	};
 
 	//Base constructor
-	template <typename T,typename P>
-	PriorityQueue<T,P> ::PriorityQueue() {
+	template <typename T, typename P>
+	PriorityQueue<T, P> ::PriorityQueue() {
 
 	}
 
 	//Returns the number of elements in queue
 	template <typename T, typename P>
-	int PriorityQueue<T,P> ::GetSize() {
+	inline int PriorityQueue<T, P> ::GetSize() {
 		return list.size();
 	}
 
@@ -57,8 +57,8 @@ namespace DTS {
 
 	//Swaps two elements, restores the property of binary heap
 	template <typename T, typename P>
-	void PriorityQueue<T, P>::Swap(int child, int parent) {
-		std::pair<T,P> temp;
+	inline void PriorityQueue<T, P>::Swap(int child, int parent) {
+		std::pair<T, P> temp;
 		temp = list[child];
 		list[child] = list[parent];
 		list[parent] = temp;
@@ -66,7 +66,7 @@ namespace DTS {
 
 	//Returns the parent node index
 	template <typename T, typename P>
-	int PriorityQueue<T, P>::GetParent(int child) {
+	inline int PriorityQueue<T, P>::GetParent(int child) {
 		if (child % 2 == 0)
 			return (child / 2) - 1;
 		else
@@ -83,28 +83,28 @@ namespace DTS {
 
 	//Returns the index of a left child
 	template <typename T, typename P>
-	int PriorityQueue<T, P>::GetLeftChild(int parent) {
+	inline int PriorityQueue<T, P>::GetLeftChild(int parent) {
 		return 2 * parent + 1;
 	}
 
 	//Returns the index of a right child
 	template <typename T, typename P>
-	int PriorityQueue<T, P>::GetRightChild(int parent) {
+	inline int PriorityQueue<T, P>::GetRightChild(int parent) {
 		return 2 * parent + 2;
 	}
 
 	//Inserts the element into queue, the element is placed in according to its priority
 	template <typename T, typename P>
-	void PriorityQueue<T, P>::Insert(T value, P priority) {
+	inline void PriorityQueue<T, P>::Insert(T value, P priority) {
 		std::pair<T, P> new_pair(value, priority);
 		list.push_back(new_pair);
-		ShiftUp(GetSize()-1);
+		ShiftUp(GetSize() - 1);
 	}
 
 	//Updates the priority of element, calls MakeHeap after
 	template<typename T, typename P>
 	inline void PriorityQueue<T, P>::UpdatePriority(int index, P priority)
-	{		
+	{
 		list[index].second = priority;
 		MakeHeap();
 	}
@@ -128,7 +128,7 @@ namespace DTS {
 
 	//Shifts the element up, if needed
 	template <typename T, typename P>
-	void PriorityQueue <T, P>::ShiftUp(int node_index)
+	inline void PriorityQueue <T, P>::ShiftUp(int node_index)
 	{
 		if (node_index != 0)
 		{
@@ -138,19 +138,19 @@ namespace DTS {
 				Swap(node_index, parent_index);
 				ShiftUp(parent_index);
 			}
-		}		
+		}
 	}
 
 	//Returns the first element in queue
 	template <typename T, typename P>
-	T PriorityQueue<T, P>::GetFirst()
+	inline T PriorityQueue<T, P>::GetFirst()
 	{
 		return list.front().first;
 	}
 
 	//Shifts the element down, if needed
 	template <typename T, typename P>
-	void PriorityQueue<T, P>::ShiftDown(int node_index) {
+	inline void PriorityQueue<T, P>::ShiftDown(int node_index) {
 		int lci, rci, min_index;
 
 		lci = GetLeftChild(node_index);
@@ -178,5 +178,4 @@ namespace DTS {
 			ShiftDown(min_index);
 		}
 	}
-
 }
