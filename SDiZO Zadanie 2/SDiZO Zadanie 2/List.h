@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace DTS
 {
@@ -20,6 +21,7 @@ namespace DTS
 	class List
 	{
 	public:
+		typedef unsigned int uint;
 
 		class iterator
 		{
@@ -125,6 +127,7 @@ namespace DTS
 		void Remove(ListNode<T> *position);
 		void PopBack();
 		void PopFront();
+		void Display();
 		T &GetFront();
 		T &GetBack();
 
@@ -281,6 +284,19 @@ namespace DTS
 	}
 
 	template<typename T>
+	inline void List<T>::Display()
+	{
+
+	}
+
+	template<>
+	inline void List<unsigned int>::Display()
+	{
+		for (auto it = begin(); it != end(); it++)
+			std::cout << *it << " ";
+	}
+
+	template<typename T>
 	inline T & List<T>::GetFront()
 	{
 		return head_->data_;
@@ -289,6 +305,6 @@ namespace DTS
 	template<typename T>
 	inline T & List<T>::GetBack()
 	{
-		returnt tail_->data_;
+		return tail_->data_;
 	}
 }
