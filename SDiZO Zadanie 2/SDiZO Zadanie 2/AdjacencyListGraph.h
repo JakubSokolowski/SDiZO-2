@@ -3,6 +3,7 @@
 #include "List.h"
 #include "Queue.h"
 #include "PriorityQueue.h"
+#include "FibonacciHeap.h"
 #include "Vector.h"
 #include <iostream>
 #include <cmath>
@@ -12,13 +13,14 @@
 #include <unordered_map>
 #include <io.h>
 #include <fcntl.h>
-
+#include <limits.h>
 
 	
 namespace SDZ
 {
 	enum Heuristic { EUCLIDEAN = 4, MANHATTAN = 1 };
 	enum MapState{ FREE = 0, TAKEN = 1, PATH = 2, PATH_START =3, PATH_FINISH = 4};
+
 
 	class AdjacencyListGraph
 	{
@@ -51,6 +53,12 @@ namespace SDZ
 		void BFT(uint start);
 		DTS::List<uint> BFT(uint start,uint finish);
 		DTS::List<uint> AStarSearch(uint source, uint destination, Heuristic h);
+
+		// Minimum Spanning Trees
+
+		void PrimMST();
+
+		// Maximum Flow
 
 		Vertex GetVertex(uint vertex_id);	
 
