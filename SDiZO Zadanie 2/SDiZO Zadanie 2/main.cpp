@@ -40,7 +40,7 @@ int main()
 	//matr.PrimMST();
 	
 
-	AdjacencyListGraph matr2 = AdjacencyListGraph(15,0, false, true);
+	AdjacencyListGraph matr2 = AdjacencyListGraph(200,1, false, true);
 	matr2.SetMaxWeight(5);
 	//matr2.DisplayMapWithId();
 	//matr2.DisplayWeights();
@@ -48,8 +48,8 @@ int main()
 	//DTS::List<uint> path = matr2.AStarSearch(0, 6,EUCLIDEAN);
 
 	//path.Display();
-	matr2.DisplayEdges();
-	matr2.DisplayMapWithId();
+	//matr2.DisplayEdges();
+	//matr2.DisplayMapWithId();
 	//matr2.DisplayMap();
 	//matr2.ClearMap();
 

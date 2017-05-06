@@ -10,7 +10,7 @@ AdjacencyListGraph::AdjacencyListGraph()
 	, edges_(0)
 	, is_directed_(false)
 	, is_euclidean_(false)
-	, max_edges_(10*9)
+	, max_edges_(10*9/2)
 	, adj_tab_(new Vertex[10])
 {}
 
@@ -21,7 +21,11 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, bool is_directed, boo
 	edges_ = 0;
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
-	max_edges_ = vertices_ * (vertices_ - 1);
+	if (is_directed)
+		max_edges_ = vertices * (vertices - 1);
+	else
+		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+	
 	adj_tab_ = new Vertex[vertices_];
 
 	//Assign the ids 0 ... vertices-1
@@ -45,7 +49,10 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	edges_ = 0;
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
-	max_edges_ = vertices_ * (vertices_ - 1);
+	if (is_directed)
+		max_edges_ = vertices * (vertices - 1);
+	else
+		max_edges_ = vertices_ * (vertices_ - 1) / 2;
 	adj_tab_ = new Vertex[vertices_];
 
 	//Assign the ids 0 ... vertices-1
@@ -368,6 +375,8 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 		uint destination = uni(rng);
 		if (!adj_tab_[source].IsConnected(destination))
 		{
+			if (source == destination)
+				continue;
 			if (is_euclidean_)
 				AddEdge(source, destination, GetDistance(source, destination));
 			else
