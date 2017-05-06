@@ -8,12 +8,16 @@
 
 namespace DTS
 {
+
+	/*Implementation of fibonacci heap from 
+	T.H. Cormen, C.E. Leiserson, R.L. Rivest, C. Stein, “Fibonacci Heaps” 
+	in "Introduction to Algorithms" ch. 20, pp.476-497  */
+
 	template<class T, class P>
 	class FibonacciHeap
 	{
 	public:
 
-		// node
 		class FibNode
 		{
 		public:
@@ -58,12 +62,12 @@ namespace DTS
 		bool IsEmpty() const
 		{
 			return size_ == 0;
-		}
+		}	
 		
-		//Returns the value with minimum key - first node of fibonacci heap
-		T GetMin()
+		//Inserts the element into the heap. Internally - creates new heap with one element and merges
+		void Insert(T val, P key)
 		{
-			return GetMinNode()->value;
+			Push(val, key);
 		}
 
 		//Removes the first node of fib heap, calls extract minimum to fix the heap
@@ -76,16 +80,10 @@ namespace DTS
 				delete x;
 		}
 
-		//Inserts the element into the heap. Internally - creates new heap with one element and merges
-		void Insert(T val, P key)
+		//Returns the value with minimum key - first node of fibonacci heap
+		T GetMin()
 		{
-			push(val, key);
-		}
-
-		//Returns the size of a heap
-		uint GetSize()
-		{
-			return (unsigned int)size_;
+			return GetMinNode()->value;
 		}
 
 		//Searches for node by it's value
@@ -105,7 +103,12 @@ namespace DTS
 			return NULL;
 		}
 
-
+		//Returns the size of a heap
+		uint GetSize()
+		{
+			return (unsigned int)size_;
+		}
+	
 		//Searches for node by value, and decreases it's key
 		void DecreaseKey(T val, P key)
 		{
@@ -115,7 +118,6 @@ namespace DTS
 		}
 
 	private:
-
 
 		//Searches for node in sub-heap
 		FibNode * FindValueRecursive(FibNode *heap, T val)
@@ -134,21 +136,16 @@ namespace DTS
 			return NULL;
 		}
 
-		FibNode* topNode()
-		{
-			return GetMinNode();
-		}
-
-		FibNode* push(T val, P key, void *pl)
+		FibNode* Push(T val, P key, void *pl)
 		{
 			FibNode *x = new FibNode(val, key, pl);
 			Insert(x);
 			return x;
 		}
 
-		FibNode* push(T val, P key)
+		FibNode* Push(T val, P key)
 		{
-			return push(val, key, nullptr);
+			return Push(val, key, nullptr);
 		}
 
 		/*
@@ -160,22 +157,25 @@ namespace DTS
 		}
 
 
-		/*
-		* insert(x)
-		* 1. x.degree = 0
-		* 2. x.p = NIL
-		* 3. x.child = NIL
-		* 4. x.mark = FALSE
-		* 5. if H.min == NIL
-		* 6. 	create a root list for H containing just x
-		* 7. 	H.min = x
-		* 8. else insert x into H's root list
-		* 9. 	if x.key < H.min.key
-		*10. 		H.min = x
-		*11. H.n = H.n + 1
-		*/
+		
 		void Insert(FibNode *x)
 		{
+
+			/*
+			* insert(x)
+			* 1. x.degree = 0
+			* 2. x.p = NIL
+			* 3. x.child = NIL
+			* 4. x.mark = FALSE
+			* 5. if H.min == NIL
+			* 6. 	create a root list for H containing just x
+			* 7. 	H.min = x
+			* 8. else insert x into H's root list
+			* 9. 	if x.key < H.min.key
+			*10. 		H.min = x
+			*11. H.n = H.n + 1
+			*/
+
 			// 1
 			x->degree = 0;
 			// 2

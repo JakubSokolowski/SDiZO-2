@@ -13,7 +13,8 @@ namespace SDZ
 	public:
 
 		uint vertex_id_;
-		bool visited_, is_open_, is_closed_;
+		bool visited_, is_open_, is_closed_, is_separated;
+	
 		DTS::List<SDZ::Edge> list_;
 
 		uint x_;
