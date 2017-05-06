@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AdjacencyListGraph.h"
 
-#define INF UINT32_MAX
+
 using namespace SDZ;
 
 //Base graph constructor. Creates not directed graph with 10 vertices without X,Y coordinates
@@ -343,12 +343,9 @@ void SDZ::AdjacencyListGraph::DrawPath()
 //Connects randomly vertices with edges, until the density is reached
 void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 {
-	if (max_edge_weight_ <= 0)
-		max_edge_weight_ = 10;
-	std::cout << max_edges_;
 	MakeConnected();
 	//Calculate the number of edges needed for given density
-	uint desired_edges = static_cast<uint>(floor(density * max_edges_ + 0.5));
+	uint desired_edges = static_cast<uint>(density * max_edges_);
 	//Calculte the number of missing edges, by substracting current number from desired
 	if (edges_ >= desired_edges)
 		return;
@@ -359,8 +356,6 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 	std::mt19937 rng(rd());
 	//Generate random integers to connect all id's
 	std::uniform_int_distribution<uint> uni(0, vertices_-1);
-	
-	std::uniform_int_distribution<uint> rnd_weight(1, max_edge_weight_);
 
 	for (uint it = 0; it < missing_edges;)
 	{
@@ -368,11 +363,9 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 		uint destination = uni(rng);
 		if (!adj_tab_[source].IsConnected(destination))
 		{
-			if (is_euclidean_)
-				AddEdge(source, destination, GetDistance(source, destination));
-			else
-				AddEdge(source, destination, rnd_weight(rng));
-			source = destination;
+			if (source == destination)
+				continue;
+			AddEdge(source, destination, GetDistance(source, destination));
 			++it;
 		}
 	}
@@ -420,36 +413,35 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 //Connects all the vertices with each other so the graph is fully connected
 void SDZ::AdjacencyListGraph::MakeConnected()
 {
-	bool old = is_directed_;
-	if (old)
-		is_directed_ = false;
-
-	DTS::Vector<bool> connected(vertices_, false);
-
 	std::random_device rd;
 	std::mt19937 rng(rd());
-	std::uniform_int_distribution<int> weight(0, max_edge_weight_);
-	std::uniform_int_distribution<int> rnd_ver(0, vertices_-1);
-	
-	uint source = rnd_ver(rng);
-	for (uint it = 0; it < vertices_-1;)
-	{				
-		uint destination = rnd_ver(rng);
-		if (source == destination)
-			continue;
+	std::uniform_int_distribution<int> uni(0, vertices_-1);
+	std::uniform_int_distribution<uint> weight(0, max_edge_weight_);
 
-		if (!adj_tab_[source].IsConnected(destination) && !connected[destination])
+	
+	uint source = uni(rng);
+	for (uint it = 0; it < vertices_;)
+	{
+		uint destination = uni(rng);
+		//
+		if (!adj_tab_[source].IsConnected(destination) && !adj_tab_[destination].IsConnected(source))
 		{
 			if (is_euclidean_)
+			{
 				AddEdge(source, destination, GetDistance(source, destination));
+				AddEdge(destination, source, GetDistance(source, destination));
+			}
 			else
-				AddEdge(source, destination, weight(rng));
-			connected[source] = true;
+			{
+				uint cost = weight(rng);
+				AddEdge(source, destination,cost);
+				AddEdge(destination, source, cost);
+			}
 			source = destination;
 			++it;
 		}
-	}	
-	is_directed_ = old;
+
+	}
 }
 
 //Searches the shortest path from start to finish using A* algorithm. 
@@ -507,59 +499,6 @@ DTS::List<uint> SDZ::AdjacencyListGraph::AStarSearch(uint start_id, uint finish_
 		}
 	}
 	return path;
-}
-
-void SDZ::AdjacencyListGraph::PrimMST()
-{
-	//Create a heap to store vertices 
-	DTS::FibonacciHeap<uint, uint> fib_heap;
-	
-	//Create Vector for keys, initializa all keys as infinite
-	DTS::Vector<uint> keys(vertices_, INF);
-
-	DTS::Vector<int> parent(vertices_, -1);
-	DTS::Vector<int> weights(vertices_, 0);
-
-	DTS::Vector<bool> inMST(vertices_, false);
-
-	//Vertex 0 is source
-	uint source = 0;
-	fib_heap.Insert(source, 0);
-	keys[source] = 0;
-
-	while (!fib_heap.IsEmpty())
-	{
-		//The first vertex in pair is the minimum key vertex,
-		//extract it from heap.
-		uint u = fib_heap.GetMin();
-		fib_heap.PopMin();
-		inMST[u] = true;
-
-		for (auto it = adj_tab_[u].list_.begin(); it != adj_tab_[u].list_.end(); it++)
-		{
-			//Get vertex label and weight of curren adjacent of u
-			uint ver = (*it).destination_id;
-			uint weight = (*it).weight_;
-
-			if (inMST[ver])
-				continue;
-			//If v is not in mst and weight of (u,v) is smaller than current key of v
-			if (keys[ver] > weight)
-			{
-				keys[ver] = weight;
-				fib_heap.Insert(ver, weight);
-				parent[ver] = u;
-				weights[ver] = weight;
-			}
-		}
-	}
-
-	std::cout << "Minimum spanning tree : " << std::endl;
-	for (uint i = 1; i < vertices_; ++i)
-	{
-		std::cout << parent[i] << " " << i << ":  " <<weights[i] << std::endl;
-	}
-	
 }
 
 //Returns the id of vertex at given coordinates

@@ -7,7 +7,6 @@ SDZ::Vertex::Vertex()
 	, visited_(false)
 	, is_open_(false)
 	, is_closed_(false)
-	, is_separated(true)
 {}
 
 SDZ::Vertex::Vertex(uint id)
