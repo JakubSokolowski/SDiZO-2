@@ -64,7 +64,7 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	{
 		map_size_ = CalculateMapSize();
 		GenerateCoordinates();
-		GenerateEdges(density);
+		GenerateEdgesFast(density);
 	}
 	MarkAllNotVisited();
 }
@@ -200,6 +200,40 @@ DTS::List<uint> SDZ::AdjacencyListGraph::BFT(uint start_id, uint finish_id)
 	return came_from;
 }
 
+uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
+{
+	uint curr_node, parent_node;
+	uint max_flow = 0;
+	//Filled by BFS
+	uint *path = new uint [vertices_];	
+
+	// Augument the flow while there is a path from source to sink
+
+	while (FordFulkersonBFS(source, sink, path))
+	{
+		//Find the minimum residual capacity of the edges along the
+		//path filled by BFS.
+		uint path_flow = INF;
+
+		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
+		{
+			parent_node = path[curr_node];
+			path_flow = min(path_flow, adj_tab_[parent_node].GetConnectionWeight(curr_node));
+		}
+		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
+		{
+			parent_node = path[curr_node];
+			//Substract path flow from reverse path
+			adj_tab_[parent_node].AddToEdgeWeight(curr_node, path_flow * -1);
+			//And add to path
+			adj_tab_[curr_node].AddToEdgeWeight(parent_node, path_flow);
+		}
+		//Add to max_flow
+		max_flow += path_flow;
+	}
+	return max_flow;
+}
+
 //Returns Vertex with given id
 Vertex SDZ::AdjacencyListGraph::GetVertex(uint vertex_id)
 {
@@ -281,18 +315,18 @@ void SDZ::AdjacencyListGraph::DisplayMap()
 					SetConsoleTextAttribute(hConsole, 12);
 					std::cout << std::setw(2) << (char)254u;
 					counter++;
-					SetConsoleTextAttribute(hConsole, 16);
+					SetConsoleTextAttribute(hConsole, 23);
 				}	
 				if (map_[x][y] == FREE)
 				{
-					SetConsoleTextAttribute(hConsole, 16);
+					SetConsoleTextAttribute(hConsole, 23);
 					std::cout << std::setw(1) << (char)219u << (char)219u;
 				}
 				if (map_[x][y] == PATH)
 				{
 					SetConsoleTextAttribute(hConsole, 10);
 					std::cout << std::setw(2) << (char)254u;
-					SetConsoleTextAttribute(hConsole, 16);
+					SetConsoleTextAttribute(hConsole, 23);
 				}					
 			}
 			std::cout << std::endl;
@@ -424,6 +458,56 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 			++it;
 		}
 	}
+}
+
+void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
+{
+	if (max_edge_weight_ <= 0)
+		max_edge_weight_ = 10;
+	
+	MakeConnected();
+	//Calculate the number of edges needed for given density
+	uint desired_edges = static_cast<uint>(floor(density * max_edges_ + 0.5));
+	//Calculte the number of missing edges, by substracting current number from desired
+	if (edges_ >= desired_edges)
+		return;
+	uint missing_edges = desired_edges - edges_;
+
+	uint threshold = static_cast<uint>(floor(density * 100 + 0.5));
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<uint> uni(0, 100);
+	std::uniform_int_distribution<uint> weight(1, max_edge_weight_);
+
+	while (edges_<desired_edges)
+	{
+		for (int i = 0; i < vertices_; i++)
+		{
+			if (edges_ == desired_edges)
+				break;
+			for (int j = 0; j < vertices_; j++)
+			{
+				if (i == j)
+					continue;
+				if (edges_ == desired_edges)
+					break;
+				uint value = uni(rng);
+				if (value < threshold)
+				{
+					if (is_euclidean_)
+					{
+						AddEdge(i, j, GetDistance(i, j));
+					}						
+					else
+					{
+						AddEdge(i, j, weight(rng));
+						//it++;
+					}				
+				}
+			}
+		}		
+	}
+	std::cout << std::endl << (double) edges_ / max_edges_;
 }
 
 //Connects all the vertices with each other so the graph is fully connected
@@ -625,6 +709,54 @@ void SDZ::AdjacencyListGraph::MarkClosed(uint node_id)
 void SDZ::AdjacencyListGraph::MarkOpen(uint node_id)
 {
 	adj_tab_[node_id].is_open_ = true;
+}
+
+bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,uint path[])
+{
+	//Create Queue for ids 
+	DTS::Queue<uint> queue = DTS::Queue<uint>();
+	bool *visited = new bool[vertices_];
+	for (int i = 0; i<vertices_; i++)
+	{
+		visited[i] = false;
+	}
+	//Mark all vertices not visited
+	//MarkAllNotVisited();
+	//Current id 
+
+
+	//Mark the current node as visited and enqueue it
+
+	visited[source] = true;
+	path[source] = -1;
+	queue.PushBack(source);
+
+	while (!queue.IsEmpty())
+	{
+		//Deque a vertex from queue and print it's id
+		uint curr_ver = queue.GetFront();
+		queue.PopFront();
+
+		//If the goal is reached, stop early
+		//if (curr_ver == sink)
+		//	break;
+
+		//Iterate through all the adacent vertices of the dequeed vertex
+		for (auto it = adj_tab_[curr_ver].list_.begin(); it != adj_tab_[curr_ver].list_.end(); it++)
+		{
+			//If adjacent has not been visited and the connection capacity > 0 (there is possbile flow)
+			if (!visited[it->destination_id] && adj_tab_[curr_ver].GetConnectionWeight(it->destination_id) > 0)
+			{				
+				//Enqueue it
+				queue.PushBack(it->destination_id);
+				//Add to path
+				path[it->destination_id] = curr_ver;
+				//Mark as visited
+				visited[it->destination_id] = true;
+			}
+		}
+	}
+	return (visited[destination]==true);
 }
 
 //Sets the heuristic used in A* search

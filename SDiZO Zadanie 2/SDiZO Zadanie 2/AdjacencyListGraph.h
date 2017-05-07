@@ -59,6 +59,7 @@ namespace SDZ
 		void PrimMST();
 
 		// Maximum Flow
+		uint FordFulkerson(uint source, uint sink);
 
 		Vertex GetVertex(uint vertex_id);	
 
@@ -91,6 +92,7 @@ namespace SDZ
 		uint GetDistance(uint source, uint destination);
 		void GenerateEdges(double density);
 		void GenerateEdges(double density, uint max_weight);
+		void GenerateEdgesFast(double density);
 		void MakeConnected();
 
 		void MarkAllVisited();
@@ -99,9 +101,9 @@ namespace SDZ
 		void MarkClosed(uint node_id);
 		void MarkOpen(uint node_id);
 
-		//Edmonds-karp n
-
-		//Prim
+		//Ford Fulkerson
+		bool FordFulkersonBFS(uint source, uint sink,uint path[]);
+		//Prim		
 
 		//A* 
 
