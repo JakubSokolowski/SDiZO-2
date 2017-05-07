@@ -27,6 +27,21 @@ void SDZ::Vertex::AddEdge(uint destination, uint weight)
 	list_.PushBack(new_edge);
 }
 
+uint SDZ::Vertex::GetEdgeWeight(uint destination)
+{
+	for (auto it = list_.begin(); it != list_.end(); it++)
+		if (it->destination_id == destination)
+			return it->weight_;
+	return NULL;
+}
+
+void SDZ::Vertex::AddToEdgeWeight(uint destination, int weight)
+{
+	for (auto it = list_.begin(); it != list_.end(); it++)
+		if (it->destination_id == destination)
+			 it->weight_ += weight;
+}
+
 void SDZ::Vertex::DisplayListWithWeights()
 {
 	std::cout << "Adjacency List for Vertex " << vertex_id_ << std::endl;

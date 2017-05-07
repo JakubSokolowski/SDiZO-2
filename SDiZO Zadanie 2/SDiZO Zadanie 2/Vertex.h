@@ -25,6 +25,8 @@ namespace SDZ
 		~Vertex();
 
 		void AddEdge(uint destination, uint weight);
+		uint GetEdgeWeight(uint destination);
+		void AddToEdgeWeight(uint destination, int weight);
 		void DisplayListWithWeights();
 		void DisplayList();
 
