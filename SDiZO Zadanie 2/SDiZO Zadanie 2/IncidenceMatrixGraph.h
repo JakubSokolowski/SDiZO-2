@@ -1,14 +1,24 @@
 #pragma once
+#include "Vector.h"
+#include "Queue.h"
+#include "PriorityQueue.h"
+#include <limits.h>
 #include <iostream>
 #include <iomanip>
+#include <unordered_map>
+#include <cmath>
 
+#define INF UINT32_MAX
+
+enum EdgeState { START = 1, END = -1, NO_EDGE = 0 };
+enum Heur { EUCLIDEAN = 4, MANHATTAN = 1, NO_HEURISTIC = 0 };
+
+typedef unsigned int uint;
 
 namespace SDZ
 {
 	class IncidenceMatrixGraph
 	{
-		typedef unsigned int uint;
-
 
 	public:
 		IncidenceMatrixGraph();
@@ -16,25 +26,35 @@ namespace SDZ
 		~IncidenceMatrixGraph();
 
 		void AddEdge(uint origin, uint destination, uint weight);
-
+		uint AStarDistanceSearch(uint origin, uint destination, Heur h);
+		uint FordFulkerson(uint source, uint sink);
+		uint FindEdgeDestination(uint vertex, uint edge);
+		int GetEdgeWeight(uint source, uint destination);
+		int GetEdgeId(uint source, uint destination);
 		void DisplayMatrix();
 		void DisplayWeights();
+		bool FordFulkersonBFS(uint source, uint destination, int path[]);
 
 	private:
 
-		const int START = 1;
-		const int END = -1;
-		const int NO_EDGE = 0;
-
-
 		int **matrix_;
+		bool is_directed, is_euclidean;
 		uint vertices_;
 		uint edges_;
 		uint number_of_edges_;
-		uint *weights;
+		int *weights;
+		uint **map_;
+		DTS::Vector<std::pair<uint, uint>> coordinates_;
+
+		
 
 		bool IsValidEdge(uint origin, uint destination);
 
+		//A star
+		Heur heursitic_;
+		void SetHeuristic(Heur h);
+		//FordFulerson
+		
 	};
 
 }
