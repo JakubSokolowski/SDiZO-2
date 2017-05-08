@@ -57,6 +57,7 @@ IncidenceMatrixGraph::~IncidenceMatrixGraph()
 	{
 		delete[] matrix_[i];
 	}
+	delete[] weights;
 }
 
 //Connects origin and destination with edge of given weight
@@ -73,7 +74,7 @@ void IncidenceMatrixGraph::AddEdge(uint origin, uint destination, uint weight)
 	}
 }
 
-uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_id, Heur h)
+uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_id, Heuristic h)
 {
 	std::unordered_map<uint, uint> came_from, cost_so_far;
 	SetHeuristic(h);
@@ -228,9 +229,9 @@ bool IncidenceMatrixGraph::IsValidEdge(uint origin, uint destination)
 	return (origin > vertices_ || destination > vertices_) ? false : true;
 }
 
-void SDZ::IncidenceMatrixGraph::SetHeuristic(Heur h)
+void SDZ::IncidenceMatrixGraph::SetHeuristic(Heuristic h)
 {
-	heursitic_ = h;
+	heuristic_ = h;
 }
 
 bool SDZ::IncidenceMatrixGraph::FordFulkersonBFS(uint source, uint destination, int path[])

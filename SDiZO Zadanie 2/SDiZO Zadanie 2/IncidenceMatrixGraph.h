@@ -7,11 +7,11 @@
 #include <iomanip>
 #include <unordered_map>
 #include <cmath>
+#include "AdjacencyListGraph.h"
 
 #define INF UINT32_MAX
 
 enum EdgeState { START = 1, END = -1, NO_EDGE = 0 };
-enum Heur { EUCLIDEAN = 4, MANHATTAN = 1, NO_HEURISTIC = 0 };
 
 typedef unsigned int uint;
 
@@ -26,7 +26,7 @@ namespace SDZ
 		~IncidenceMatrixGraph();
 
 		void AddEdge(uint origin, uint destination, uint weight);
-		uint AStarDistanceSearch(uint origin, uint destination, Heur h);
+		uint AStarDistanceSearch(uint origin, uint destination, Heuristic h);
 		uint FordFulkerson(uint source, uint sink);
 		uint FindEdgeDestination(uint vertex, uint edge);
 		int GetEdgeWeight(uint source, uint destination);
@@ -46,13 +46,12 @@ namespace SDZ
 		uint **map_;
 		DTS::Vector<std::pair<uint, uint>> coordinates_;
 
-		
+		SDZ::Heuristic heuristic_;
 
 		bool IsValidEdge(uint origin, uint destination);
 
 		//A star
-		Heur heursitic_;
-		void SetHeuristic(Heur h);
+		void SetHeuristic(Heuristic h);
 		//FordFulerson
 		
 	};
