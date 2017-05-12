@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Vertex.h"
 #include "List.h"
 #include "Queue.h"
@@ -11,15 +12,18 @@
 #include <Windows.h>
 #include <iomanip>
 #include <unordered_map>
+#include <fstream>
 #include <io.h>
 #include <fcntl.h>
 #include <limits.h>
 
+#define INF UINT32_MAX
 	
 namespace SDZ
 {
-	enum Heuristic { EUCLIDEAN = 4, MANHATTAN = 1 };
+	enum Heuristic { EUCLIDEAN = 4, MANHATTAN = 1, DIJKSTRA = 0 };
 	enum MapState{ FREE = 0, TAKEN = 1, PATH = 2, PATH_START =3, PATH_FINISH = 4};
+	enum GraphParameters { DIRECTED = true, UNDIRECTED = false, XY_COORDINATES = true, NO_COORDINATES = false };
 
 
 	class AdjacencyListGraph
@@ -29,14 +33,26 @@ namespace SDZ
 		// Constructors
 
 		AdjacencyListGraph();
+		AdjacencyListGraph(std::string filename, bool is_directed, bool is_euclidean);
 		AdjacencyListGraph(uint vertices, bool is_directed, bool is_euclidian);
-		AdjacencyListGraph(uint vertives, double density, bool is_directed, bool is_euclidean);
+		AdjacencyListGraph(uint vertices, double density, bool is_directed, bool is_euclidean);	
+		AdjacencyListGraph(uint vertices, double density, bool is_directed, bool is_euclidean, bool fast_generation);
+		void SetParameters(uint vertices, double density, bool is_directed, bool is_euclidean);
+		void SetParameters(uint vertices, bool is_directed, bool is_euclidean);
 		~AdjacencyListGraph();
 
 		// Bulding graph
 
 		void AddEdge(uint source, uint destination, uint weight);
 		void SetMaxWeight(uint max_weight);
+		void WriteToFile(uint vertices, double density, bool is_directed, bool is_euclidean, std::string filename);
+		void WriteToFile(std::string filename);
+
+		//Access
+		uint GetX(uint vertex);
+		uint GetY(uint vertex);
+		void SetX(uint vertex,uint value);
+		void SetY(uint vertex,uint value);
 
 		// Display 
 
@@ -44,19 +60,21 @@ namespace SDZ
 		void DisplayEdgesWithWeights();
 		void DisplayMap();
 		void DisplayMapWithId();
+		void DisplayInfo();
 		void DrawPath();
 		void ClearMap();
-
 
 		// Traversal & Search
 
 		void BFT(uint start);
 		DTS::List<uint> BFT(uint start,uint finish);
-		DTS::List<uint> AStarSearch(uint source, uint destination, Heuristic h);
+		DTS::Vector<uint> AStarPathSearch(uint source, uint destination, Heuristic h);
+		uint AStarDistanceSearch(uint source, uint destination, Heuristic h);
 
 		// Minimum Spanning Trees
 
-		void PrimMST();
+		void FHPrimMST();
+		void PQPrimMST();
 
 		// Maximum Flow
 		uint FordFulkerson(uint source, uint sink);
@@ -72,6 +90,8 @@ namespace SDZ
 		uint max_edges_;
 		uint max_edge_weight_;
 		Vertex *adj_tab_;	
+
+		void ClearGraph();
 
 		// Construcor flags
 
@@ -102,14 +122,14 @@ namespace SDZ
 		void MarkOpen(uint node_id);
 
 		//Ford Fulkerson
-		bool FordFulkersonBFS(uint source, uint sink,uint path[]);
+		bool FordFulkersonBFS(uint source, uint sink,int path[]);
 		//Prim		
 
 		//A* 
 
 		Heuristic heuristic_;
-		void SetHeuristic(Heuristic h);
-		
+
+		void SetHeuristic(Heuristic h);		
 		uint GetManhattanHeuristic(uint source, uint destination);
 		uint GetEuclideanHeuristic(uint source, uint destination);
 		uint GetHeuristicValue(uint source, uint destination);	
