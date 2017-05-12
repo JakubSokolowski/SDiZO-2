@@ -3,13 +3,12 @@
 
 using namespace SDZ;
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
 
 //Base constructor, creates matrix with 10 vertices and 10 edges
 IncidenceMatrixGraph::IncidenceMatrixGraph()
 	: vertices_(10)
 	, edges_(10)
-	, number_of_edges_(0)
+	, current_edges_(0)
 {
 	//Create Matrix
 	matrix_ = new int *[10];
@@ -32,7 +31,7 @@ IncidenceMatrixGraph::IncidenceMatrixGraph()
 IncidenceMatrixGraph::IncidenceMatrixGraph(uint number_of_vertices, uint number_of_edges)
 	: vertices_(number_of_vertices)
 	, edges_(number_of_edges)
-	, number_of_edges_(0)
+	, current_edges_(0)
 {
 	//Create Matrix
 	matrix_ = new int *[number_of_vertices];
@@ -66,11 +65,11 @@ void IncidenceMatrixGraph::AddEdge(uint origin, uint destination, uint weight)
 	if (IsValidEdge(origin, destination))
 	{
 		//Connect the origin and destination with edge of given weight
-		matrix_[origin][number_of_edges_] = START;
-		matrix_[destination][number_of_edges_] = END;
-		weights[number_of_edges_] = weight;
+		matrix_[origin][current_edges_] = START;
+		matrix_[destination][current_edges_] = END;
+		weights[current_edges_] = weight;
 		
-		++number_of_edges_;
+		++current_edges_;
 	}
 }
 
@@ -91,7 +90,7 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 	while (!frontier.IsEmpty())
 	{
 		//Deque a vertex from queue and print it's id
-		auto current = frontier.GetFirst();
+		auto current = frontier.GetFront();
 		frontier.PopFront();
 
 		//If the goal is reached, stop early
@@ -111,7 +110,7 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 				//If node is marked as closed, move over to the next one
 				if (!cost_so_far.count(destination_id) || new_cost < cost_so_far[destination_id]) {
 					cost_so_far[destination_id] = new_cost;
-					uint priority = new_cost + 0;//GetHeuristicValue(it->destination_id, finish_id);
+					uint priority = new_cost + GetHeuristicValue(destination_id, finish_id);
 					frontier.Insert(destination_id, priority);
 					came_from[destination_id] = current;
 				}
@@ -179,10 +178,10 @@ void IncidenceMatrixGraph::DisplayMatrix()
 void IncidenceMatrixGraph::DisplayWeights()
 {
 	std::cout <<std::endl<< std::setw(2) << " ";
-	for (uint i = 0; i < number_of_edges_ ; i++)
+	for (uint i = 0; i < current_edges_ ; i++)
 		std::cout << std::setw(3) << i << " ";
 	std::cout << std::setw(2) << std::endl << " ";
-	for (uint i = 0; i < number_of_edges_ ; i++)
+	for (uint i = 0; i < current_edges_ ; i++)
 		std::cout << std::setw(3) << weights[i] << " ";
 	std::cout << std::endl;
 }
@@ -229,9 +228,94 @@ bool IncidenceMatrixGraph::IsValidEdge(uint origin, uint destination)
 	return (origin > vertices_ || destination > vertices_) ? false : true;
 }
 
+void SDZ::IncidenceMatrixGraph::GenerateCoordinates()
+{
+	uint map_size_ = CalculateMapSize();
+
+	//Create map 
+	map_ = new int*[map_size_];
+	for (uint i = 0; i < map_size_; i++)
+	{
+		//Mark all spaces in map as free
+		map_[i] = new int[map_size_];
+		for (uint j = 0; j < map_size_; j++)
+			map_[i][j] = FREE;
+	}
+
+	//Uniform distribution random place generation
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<int> uni(0, map_size_ - 1);
+
+	for (uint it = 0; it < vertices_; it++)
+	{
+		bool avalible_space = false;
+
+		while (!avalible_space)
+		{
+			uint x = uni(rng);
+			uint y = uni(rng);
+			if (map_[x][y] == 0)
+			{
+				SetCoordinates(it, x, y);
+				map_[x][y] = TAKEN;
+				avalible_space = true;
+			}
+		}
+	}
+}
+
+uint SDZ::IncidenceMatrixGraph::CalculateMapSize()
+{
+	return uint(ceil(sqrt(vertices_ * 4)));
+}
+
+void SDZ::IncidenceMatrixGraph::SetCoordinates(uint vertex, uint X, uint Y)
+{
+	coordinates_.at(vertex) = std::make_pair(X, Y);
+}
+
 void SDZ::IncidenceMatrixGraph::SetHeuristic(Heuristic h)
 {
 	heuristic_ = h;
+}
+
+uint SDZ::IncidenceMatrixGraph::GetDistance(uint source, uint destination)
+{
+	uint X = abs((int)coordinates_.at(source).first - (int)coordinates_.at(destination).first);
+	uint Y = abs((int)coordinates_.at(source).second - (int)coordinates_.at(destination).second);
+	return static_cast<uint>(sqrt(pow(X, 2) + pow(Y, 2)));
+}
+
+uint SDZ::IncidenceMatrixGraph::GetManhattanHeuristic(uint source, uint destination)
+{
+	uint X = abs((int)coordinates_.at(source).first - (int)coordinates_.at(destination).first);
+	uint Y = abs((int)coordinates_.at(source).second - (int)coordinates_.at(destination).second);
+	return static_cast<uint>(MANHATTAN * (X + Y));
+}
+
+uint SDZ::IncidenceMatrixGraph::GetEuclideanHeuristic(uint source, uint destination)
+{
+	uint X = abs((int)coordinates_.at(source).first - (int)coordinates_.at(destination).first);
+	uint Y = abs((int)coordinates_.at(source).second - (int)coordinates_.at(destination).second);
+	return static_cast<uint>(EUCLIDEAN * sqrt(pow(X, 2) + pow(Y, 2)));
+}
+
+uint SDZ::IncidenceMatrixGraph::GetHeuristicValue(uint source, uint destination)
+{
+	// TODO change to switch
+	if (heuristic_ == MANHATTAN)
+	{
+		return GetManhattanHeuristic(source, destination);
+	}
+	if (heuristic_ == EUCLIDEAN)
+	{
+		return GetEuclideanHeuristic(source, destination);
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 bool SDZ::IncidenceMatrixGraph::FordFulkersonBFS(uint source, uint destination, int path[])

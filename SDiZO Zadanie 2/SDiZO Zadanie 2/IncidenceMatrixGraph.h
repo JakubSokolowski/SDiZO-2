@@ -13,6 +13,7 @@
 
 enum EdgeState { START = 1, END = -1, NO_EDGE = 0 };
 
+
 typedef unsigned int uint;
 
 namespace SDZ
@@ -37,21 +38,41 @@ namespace SDZ
 
 	private:
 
+		//Array that holds graph representation [vertices_][edges_]
 		int **matrix_;
+		//Constructor flags
 		bool is_directed, is_euclidean;
+		//Number of vertices
 		uint vertices_;
+		//Number of edges
 		uint edges_;
-		uint number_of_edges_;
+		//Current number of edges
+		uint current_edges_;
+		//Array that holds the weights of edges
 		int *weights;
-		uint **map_;
+
+		//X Y map with randomly placed vertices
+		int **map_;
+		//X Y coordinates of vertices
 		DTS::Vector<std::pair<uint, uint>> coordinates_;
 
+		//Chosen heuristic function
 		SDZ::Heuristic heuristic_;
 
 		bool IsValidEdge(uint origin, uint destination);
 
+		bool IsConnected(uint origin, uint destination);
+		void MakeConnected();
+		void GenerateEdges(double density);
+		void GenerateCoordinates();
+		uint CalculateMapSize();
+		void SetCoordinates(uint vertex, uint X, uint Y);
 		//A star
 		void SetHeuristic(Heuristic h);
+		uint GetDistance(uint source, uint destination);
+		uint GetManhattanHeuristic(uint source, uint destination);
+		uint GetEuclideanHeuristic(uint source, uint destination);
+		uint GetHeuristicValue(uint source, uint destination);
 		//FordFulerson
 		
 	};
