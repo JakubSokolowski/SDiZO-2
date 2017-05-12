@@ -35,6 +35,7 @@ namespace SDZ
 		void DisplayMatrix();
 		void DisplayWeights();
 		bool FordFulkersonBFS(uint source, uint destination, int path[]);
+		bool IsConnected(uint origin, uint destination);
 
 	private:
 
@@ -61,7 +62,7 @@ namespace SDZ
 
 		bool IsValidEdge(uint origin, uint destination);
 
-		bool IsConnected(uint origin, uint destination);
+		
 		void MakeConnected();
 		void GenerateEdges(double density);
 		void GenerateCoordinates();

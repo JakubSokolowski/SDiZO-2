@@ -228,6 +228,17 @@ bool IncidenceMatrixGraph::IsValidEdge(uint origin, uint destination)
 	return (origin > vertices_ || destination > vertices_) ? false : true;
 }
 
+bool SDZ::IncidenceMatrixGraph::IsConnected(uint origin, uint destination)
+{
+	for (auto it = 0; it < edges_; it++)
+	{
+		if (matrix_[origin][it] == 1)
+			if (matrix_[destination][it] == -1)
+				return true;
+	}
+	return false;
+}
+
 void SDZ::IncidenceMatrixGraph::GenerateCoordinates()
 {
 	uint map_size_ = CalculateMapSize();
