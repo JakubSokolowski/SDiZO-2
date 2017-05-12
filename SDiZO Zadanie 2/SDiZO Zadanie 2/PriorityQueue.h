@@ -30,7 +30,7 @@ namespace DTS {
 		void UpdatePriority(int index, P priority);
 		P GetPriority(int index);
 		void PopFront();
-		T GetFirst();
+		T GetFront();
 		int GetSize();
 		bool IsEmpty();
 
@@ -143,7 +143,7 @@ namespace DTS {
 
 	//Returns the first element in queue
 	template <typename T, typename P>
-	inline T PriorityQueue<T, P>::GetFirst()
+	inline T PriorityQueue<T, P>::GetFront()
 	{
 		return list.front().first;
 	}

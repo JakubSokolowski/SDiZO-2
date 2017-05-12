@@ -23,8 +23,11 @@ SDZ::Vertex::~Vertex()
 
 void SDZ::Vertex::AddEdge(uint destination, uint weight)
 {
-	Edge new_edge = Edge(vertex_id_, destination, weight);
-	list_.PushBack(new_edge);
+	if (!IsConnected(destination))
+	{
+		Edge new_edge = Edge(vertex_id_, destination, weight);
+		list_.PushBack(new_edge);
+	}	
 }
 
 uint SDZ::Vertex::GetEdgeWeight(uint destination)

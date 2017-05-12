@@ -106,7 +106,7 @@ namespace DTS
 		//Returns the size of a heap
 		uint GetSize()
 		{
-			return (unsigned int)size_;
+			return size_;
 		}
 	
 		//Searches for node by value, and decreases it's key
