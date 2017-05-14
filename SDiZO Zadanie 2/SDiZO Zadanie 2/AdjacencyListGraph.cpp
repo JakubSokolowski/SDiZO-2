@@ -10,7 +10,7 @@ AdjacencyListGraph::AdjacencyListGraph()
 	, edges_(0)
 	, is_directed_(false)
 	, is_euclidean_(false)
-	, max_edges_(10*9/2)
+	, edges_max_num_(10*9/2)
 	, adj_tab_(new Vertex[10])
 {}
 
@@ -31,9 +31,9 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(std::string filepath, bool is_direct
 	file >> vertices_;
 
 	if (is_directed)
-		max_edges_ = vertices_ * (vertices_ - 1);
+		edges_max_num_ = vertices_ * (vertices_ - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 
 	adj_tab_ = new Vertex[vertices_];
 	for (uint i = 0; i < vertices_; i++)
@@ -61,7 +61,7 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(std::string filepath, bool is_direct
 	file.close();	
 }
 
-//Creates graph with given amount of vertices. If is_euclidean flag is set, generate X,Y coordinates for vertices
+//Creates graph with given amount of vertices. If is_euclidean_ flag is set, generate X,Y coordinates for vertices
 SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, bool is_directed, bool is_euclidean)
 {	
 	vertices_ = vertices;
@@ -69,9 +69,9 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, bool is_directed, boo
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
 	if (is_directed)
-		max_edges_ = vertices * (vertices - 1);
+		edges_max_num_ = vertices * (vertices - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 	
 	adj_tab_ = new Vertex[vertices_];
 
@@ -89,7 +89,7 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, bool is_directed, boo
 	MarkAllNotVisited();
 }
 
-//Creates graph with given amount of vertices and density. If is_euclidean flag is set, generate X,Y coordinates for vertices
+//Creates graph with given amount of vertices and density. If is_euclidean_ flag is set, generate X,Y coordinates for vertices
 SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool is_directed, bool is_euclidean)
 {
 	vertices_ = vertices;
@@ -97,9 +97,9 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
 	if (is_directed)
-		max_edges_ = vertices * (vertices - 1);
+		edges_max_num_ = vertices * (vertices - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 	adj_tab_ = new Vertex[vertices_];
 
 	//Assign the ids 0 ... vertices-1
@@ -111,9 +111,7 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	{
 		map_size_ = CalculateMapSize();
 		GenerateCoordinates();
-		std::cout << "\nGenerated Coordinates";
 		GenerateEdgesFast(density);
-		std::cout << "\nGenerated edges";
 	}
 	else
 	{
@@ -129,9 +127,9 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
 	if (is_directed)
-		max_edges_ = vertices * (vertices - 1);
+		edges_max_num_ = vertices * (vertices - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 	adj_tab_ = new Vertex[vertices_];
 
 	//Assign the ids 0 ... vertices-1
@@ -143,13 +141,10 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	{
 		map_size_ = CalculateMapSize();
 		GenerateCoordinates();
-		std::cout << "\nGenerated Coordinates";
 		if(fast_generation)
 			GenerateEdgesFast(density);
 		else
 			GenerateEdges(density);		
-		
-		std::cout << "\nGenerated edges";
 	}
 	else
 	{
@@ -163,8 +158,8 @@ void SDZ::AdjacencyListGraph::ClearGraph()
 	delete [] adj_tab_;
 	edges_ = 0;
 	vertices_ = 0;
-	max_edges_ = 0;
-	max_edge_weight_ = 0;
+	edges_max_num_ = 0;
+	edge_max_weight_ = 0;
 
 	delete[] map_;
 	map_size_ = 0;
@@ -180,9 +175,9 @@ void SDZ::AdjacencyListGraph::SetParameters(uint vertices, double density, bool 
 	adj_tab_ = new Vertex[vertices_];
 
 	if (is_directed)
-		max_edges_ = vertices * (vertices - 1);
+		edges_max_num_ = vertices * (vertices - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 
 	//Assign the ids 0 ... vertices-1
 	for (uint it = 0; it < vertices_; ++it)
@@ -211,9 +206,9 @@ void SDZ::AdjacencyListGraph::SetParameters(uint vertices, bool is_directed, boo
 	is_directed_ = is_directed;
 	is_euclidean_ = is_euclidean;
 	if (is_directed)
-		max_edges_ = vertices * (vertices - 1);
+		edges_max_num_ = vertices * (vertices - 1);
 	else
-		max_edges_ = vertices_ * (vertices_ - 1) / 2;
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
 
 	adj_tab_ = new Vertex[vertices_];
 
@@ -243,7 +238,7 @@ AdjacencyListGraph::~AdjacencyListGraph()
 //Connects source and destination vertex with edge of given weight;
 void SDZ::AdjacencyListGraph::AddEdge(uint source, uint destination, uint weight)
 {
-
+	
 	adj_tab_[source].AddEdge(destination, weight);
 	if (!is_directed_)
 		adj_tab_[destination].AddEdge(source, weight);
@@ -253,7 +248,7 @@ void SDZ::AdjacencyListGraph::AddEdge(uint source, uint destination, uint weight
 //Sets the maximum weight of edge
 void SDZ::AdjacencyListGraph::SetMaxWeight(uint max_weight)
 {
-	max_edge_weight_ = max_weight;
+	edge_max_weight_ = max_weight;
 }
 
 void SDZ::AdjacencyListGraph::WriteToFile(uint vertices, double density, bool is_directed, bool is_euclidean,std::string filename)
@@ -330,8 +325,8 @@ void SDZ::AdjacencyListGraph::DisplayEdgesWithWeights()
 	for (uint it = 0; it < vertices_; it++)
 	{
 		adj_tab_[it].DisplayListWithWeights();
-		std::cout << std::endl;
 	}
+	std::cout << std::endl;
 }
 
 //Breadth first traversal of graph. Displays the traversed path
@@ -611,7 +606,7 @@ void SDZ::AdjacencyListGraph::DisplayInfo()
 		else
 		{
 			std::cout << " and does not have X,Y coordinates on map" << std::endl;
-			std::cout << "Max edge weight: " << max_edge_weight_ << std::endl;
+			std::cout << "Max edge weight: " << edge_max_weight_ << std::endl;
 		}
 	}
 	else
@@ -622,12 +617,12 @@ void SDZ::AdjacencyListGraph::DisplayInfo()
 		else
 		{
 			std::cout << " and does not have X,Y coordinates on map" << std::endl;
-			std::cout << "Max edge weight: " << max_edge_weight_ << std::endl;
+			std::cout << "Max edge weight: " << edge_max_weight_ << std::endl;
 		}
 	}
 	std::cout << "Vertices : " << vertices_ << std::endl;
-	std::cout << "Edges    : " << edges_ << "  " << "Max edges: " << max_edges_ << std::endl;
-	std::cout << std::setprecision(2) << "Density  : " << double(edges_) / max_edges_ << "\n\n";
+	std::cout << "Edges    : " << edges_ << "  " << "Max edges: " << edges_max_num_ << std::endl;
+	std::cout << std::setprecision(2) << "Density  : " << double(edges_) / edges_max_num_ << "\n\n";
 }
 
 //Marks path vertices on a map
@@ -638,11 +633,11 @@ void SDZ::AdjacencyListGraph::DrawPath()
 //Connects randomly vertices with edges, until the density is reached
 void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 {
-	if (max_edge_weight_ <= 0)
-		max_edge_weight_ = 10;
+	if (edge_max_weight_ <= 0)
+		edge_max_weight_ = 10;
 	MakeConnected();
 	//Calculate the number of edges needed for given density
-	uint desired_edges = static_cast<uint>(floor(density * max_edges_ + 0.5));
+	uint desired_edges = static_cast<uint>(floor(density * edges_max_num_ + 0.5));
 	//Calculte the number of missing edges, by substracting current number from desired
 	if (edges_ >= desired_edges)
 		return;
@@ -654,7 +649,7 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 	//Generate random integers to connect all id's
 	std::uniform_int_distribution<uint> rnd_vertex(0, vertices_-1);
 	
-	std::uniform_int_distribution<uint> rnd_weight(1, max_edge_weight_);
+	std::uniform_int_distribution<uint> rnd_weight(1, edge_max_weight_);
 
 	for (uint it = 0; it < missing_edges;)
 	{
@@ -677,7 +672,7 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density)
 void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 {
 	//Calculate the number of edges needed for given density
-	uint desired_edges = static_cast<uint>(density * max_edges_);
+	uint desired_edges = static_cast<uint>(density * edges_max_num_);
 
 	// If given density is smaller than the min density required for graph to be connected, return
 	if (edges_ >= desired_edges)
@@ -714,24 +709,25 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 
 void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 {
-	if (max_edge_weight_ <= 0)
-		max_edge_weight_ = 10;
+	if (edge_max_weight_ <= 0)
+		edge_max_weight_ = 10;
 	
 	MakeConnected();
 	//Calculate the number of edges needed for given density
-	uint desired_edges = static_cast<uint>(floor(density * max_edges_ + 0.5));
+	uint desired_edges = static_cast<uint>(floor(density * edges_max_num_ + 0.5));
 	//Calculte the number of missing edges, by substracting current number from desired
 	if (edges_ >= desired_edges)
 		return;
 	uint missing_edges = desired_edges - edges_;
+	
 
 	uint threshold = static_cast<uint>(floor(density * 100 + 0.5));
 	std::random_device rd;
 	std::mt19937 rng(rd());
 	std::uniform_int_distribution<uint> uni(0, 100);
-	std::uniform_int_distribution<uint> weight(1, max_edge_weight_);
+	std::uniform_int_distribution<uint> weight(1, edge_max_weight_);
 
-	while (edges_<desired_edges)
+	while (edges_!=desired_edges)
 	{
 		for (uint i = 0; i < vertices_; i++)
 		{
@@ -739,19 +735,20 @@ void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 			{
 				if (i == j)
 					continue;
-				if (edges_ == desired_edges)
-					break;
 				uint value = uni(rng);
-				if (value < threshold)
+				if (value + 10 < threshold)
 				{
-					if (is_euclidean_)
+					if (!adj_tab_[i].IsConnected(j))
 					{
-						AddEdge(i, j, GetDistance(i, j));
-					}
-					else
-					{
-						AddEdge(i, j, weight(rng));
-					}					
+						if (is_euclidean_)
+						{
+							AddEdge(i, j, GetDistance(i, j));
+						}
+						else
+						{
+							AddEdge(i, j, weight(rng));
+						}
+					}						
 				}
 				if (edges_ == desired_edges)
 					break;
@@ -771,10 +768,11 @@ void SDZ::AdjacencyListGraph::MakeConnected()
 
 	std::random_device rd;
 	std::mt19937 rng(rd());
-	std::uniform_int_distribution<int> weight(0, max_edge_weight_);
+	std::uniform_int_distribution<int> weight(0, edge_max_weight_);
 	std::uniform_int_distribution<int> rnd_ver(0, vertices_-1);
 	
 	uint source = rnd_ver(rng);
+	connected[source] = true;
 	for (uint it = 0; it < vertices_-1;)
 	{				
 		uint destination = rnd_ver(rng);
@@ -784,19 +782,15 @@ void SDZ::AdjacencyListGraph::MakeConnected()
 		if (!adj_tab_[source].IsConnected(destination) && !connected[destination])
 		{
 			if (is_euclidean_)
-			{
+			{				
 				AddEdge(source, destination, GetDistance(source, destination));
-				if (old)
-					edges_++;
 			}				
 			else
 			{
 				AddEdge(source, destination, weight(rng));
-				if (old)
-					edges_++;
 			}
 				
-			connected[source] = true;
+			connected[destination] = true;
 			source = destination;
 			++it;
 		}
@@ -957,12 +951,11 @@ void SDZ::AdjacencyListGraph::FHPrimMST()
 		}
 	}
 
-	/*std::cout << "Minimum spanning tree : " << std::endl;
+	std::cout << "Minimum spanning tree : " << std::endl;
 	for (uint i = 1; i < vertices_; ++i)
 	{
 		std::cout << parent[i] << " " << i << ":  " <<weights[i] << std::endl;
-	}*/
-	
+	}	
 }
 
 void SDZ::AdjacencyListGraph::PQPrimMST()
