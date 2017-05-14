@@ -529,7 +529,6 @@ void SDZ::AdjacencyListGraph::DisplayMap()
 			{
 				if (map_[x][y] == TAKEN)
 				{
-
 					// 12 - Red, 16 - Black, 15 - White, 13 - Green
 					SetConsoleTextAttribute(hConsole, 12);
 					std::cout << std::setw(2) << (char)254u;
@@ -543,10 +542,22 @@ void SDZ::AdjacencyListGraph::DisplayMap()
 				}
 				if (map_[x][y] == PATH)
 				{
-					SetConsoleTextAttribute(hConsole, 10);
+					SetConsoleTextAttribute(hConsole, 13);
 					std::cout << std::setw(2) << (char)254u;
 					SetConsoleTextAttribute(hConsole, 23);
-				}					
+				}	
+				if (map_[x][y] == PATH_START)
+				{
+					SetConsoleTextAttribute(hConsole, 9);
+					std::cout << std::setw(2) << (char)254u;
+					SetConsoleTextAttribute(hConsole, 23);
+				}
+				if (map_[x][y] == PATH_FINISH)
+				{
+					SetConsoleTextAttribute(hConsole, 9);
+					std::cout << std::setw(2) << (char)254u;
+					SetConsoleTextAttribute(hConsole, 23);
+				}
 			}
 			std::cout << std::endl;
 		}
@@ -571,22 +582,34 @@ void SDZ::AdjacencyListGraph::DisplayMapWithId()
 		{
 			for (uint y = 0; y < map_size_; y++)
 			{
-				if (map_[x][y] == 1)
+				if (map_[x][y] == TAKEN)
 				{
 					SetConsoleTextAttribute(hConsole, 12);
 					std::cout << std::setw(print_width) << FindVertex(x,y);
 					counter++;
 					SetConsoleTextAttribute(hConsole, 15);
 				}
-				if (map_[x][y] == 0)
+				if (map_[x][y] == FREE)
 				{
 					SetConsoleTextAttribute(hConsole, 15);
 					std::cout << std::setw(print_width) << (char)254u;
 				}
-				if(map_[x][y] == 2)
+				if(map_[x][y] == PATH)
 				{
 					SetConsoleTextAttribute(hConsole, 10);
 					std::cout << std::setw(print_width) << FindVertex(x,y);
+					SetConsoleTextAttribute(hConsole, 15);
+				}
+				if (map_[x][y] == PATH_START)
+				{
+					SetConsoleTextAttribute(hConsole, 9);
+					std::cout << std::setw(print_width) << FindVertex(x, y);
+					SetConsoleTextAttribute(hConsole, 15);
+				}
+				if (map_[x][y] == PATH_FINISH)
+				{
+					SetConsoleTextAttribute(hConsole, 9);
+					std::cout << std::setw(print_width) << FindVertex(x, y);
 					SetConsoleTextAttribute(hConsole, 15);
 				}
 			}
@@ -626,8 +649,15 @@ void SDZ::AdjacencyListGraph::DisplayInfo()
 }
 
 //Marks path vertices on a map
-void SDZ::AdjacencyListGraph::DrawPath()
+void SDZ::AdjacencyListGraph::DrawPath(DTS::Vector<uint> &vec)
 {
+	ClearMap();
+	for (auto it : vec)
+	{
+		MarkAsPathVertex(it);
+	}
+	map_[adj_tab_[vec.at(0)].x_][adj_tab_[vec.at(0)].y_] = PATH_START;
+	map_[adj_tab_[vec.at(vec.size()-1)].x_][adj_tab_[vec.at(vec.size()-1)].y_] = PATH_FINISH;
 }
 
 //Connects randomly vertices with edges, until the density is reached
@@ -674,7 +704,7 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 	//Calculate the number of edges needed for given density
 	uint desired_edges = static_cast<uint>(density * edges_max_num_);
 
-	// If given density is smaller than the min density required for graph to be connected, return
+	// If given density is smaller than the min density required for graph to be alredy_connected, return
 	if (edges_ >= desired_edges)
 		return;
 
@@ -694,7 +724,7 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 		uint source = rnd_vertex(rng);
 		uint destination = rnd_vertex(rng);
 
-		//Check if they are connected
+		//Check if they are alredy_connected
 		if (!adj_tab_[source].IsConnected(destination))
 		{
 			// Cannot connect vertex with itself - loops are not allowed
@@ -715,11 +745,10 @@ void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 	MakeConnected();
 	//Calculate the number of edges needed for given density
 	uint desired_edges = static_cast<uint>(floor(density * edges_max_num_ + 0.5));
+
 	//Calculte the number of missing edges, by substracting current number from desired
 	if (edges_ >= desired_edges)
-		return;
-	uint missing_edges = desired_edges - edges_;
-	
+		return;	
 
 	uint threshold = static_cast<uint>(floor(density * 100 + 0.5));
 	std::random_device rd;
@@ -727,16 +756,22 @@ void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 	std::uniform_int_distribution<uint> uni(0, 100);
 	std::uniform_int_distribution<uint> weight(1, edge_max_weight_);
 
-	while (edges_!=desired_edges)
+	while (edges_<=desired_edges)
 	{
+		if (edges_ == desired_edges)
+			break;
 		for (uint i = 0; i < vertices_; i++)
 		{
+			if (edges_ == desired_edges)
+				break;
 			for (uint j = 0; j < vertices_; j++)
 			{
 				if (i == j)
 					continue;
+				if (edges_ == desired_edges)
+					break;
 				uint value = uni(rng);
-				if (value + 10 < threshold)
+				if (value < threshold)
 				{
 					if (!adj_tab_[i].IsConnected(j))
 					{
@@ -757,14 +792,14 @@ void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 	}
 }
 
-//Connects all the vertices with each other so the graph is fully connected
+//Connects all the vertices with each other so the graph is fully alredy_connected
 void SDZ::AdjacencyListGraph::MakeConnected()
 {
 	bool old = is_directed_;
 	if (old)
 		is_directed_ = false;
 
-	DTS::Vector<bool> connected(vertices_, false);
+	DTS::Vector<bool> alredy_connected(vertices_, false);
 
 	std::random_device rd;
 	std::mt19937 rng(rd());
@@ -772,25 +807,24 @@ void SDZ::AdjacencyListGraph::MakeConnected()
 	std::uniform_int_distribution<int> rnd_ver(0, vertices_-1);
 	
 	uint source = rnd_ver(rng);
-	connected[source] = true;
+	alredy_connected[source] = true;
 	for (uint it = 0; it < vertices_-1;)
 	{				
 		uint destination = rnd_ver(rng);
 		if (source == destination)
 			continue;
 
-		if (!adj_tab_[source].IsConnected(destination) && !connected[destination])
+		if (!adj_tab_[source].IsConnected(destination) && !alredy_connected[destination])
 		{
-			if (is_euclidean_)
-			{				
-				AddEdge(source, destination, GetDistance(source, destination));
-			}				
+			if (is_euclidean_)						
+				AddEdge(source, destination, GetDistance(source, destination));							
 			else
-			{
 				AddEdge(source, destination, weight(rng));
-			}
+
+			if (old)
+				++edges_;
 				
-			connected[destination] = true;
+			alredy_connected[destination] = true;
 			source = destination;
 			++it;
 		}
@@ -826,15 +860,9 @@ DTS::Vector<uint> SDZ::AdjacencyListGraph::AStarPathSearch(uint start, uint goal
 		//If the goal is reached, stop early
 		if (current == goal)
 		{
-		
-			if(is_euclidean_)
-				MarkAsPathVertex(current);
 			break;
 		}
 		path.PushBack(current);
-
-		if(is_euclidean_)
-			MarkAsPathVertex(current);
 
 		//Iterate through all the neighbour nodes
 		for (auto it = adj_tab_[current].list_.begin(); it != adj_tab_[current].list_.end(); it++)
@@ -895,7 +923,8 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 		{
 			uint new_cost = cost_so_far[current] + it->weight_;
 			//If node is marked as closed, move over to the next one
-			if (!cost_so_far.count(it->destination_id) || new_cost < cost_so_far[it->destination_id]) {
+			if (!cost_so_far.count(it->destination_id) || new_cost < cost_so_far[it->destination_id])
+			{
 				cost_so_far[it->destination_id] = new_cost;
 				uint priority = new_cost + GetHeuristicValue(it->destination_id, finish_id);
 				frontier.Insert(it->destination_id, priority);
@@ -1038,7 +1067,7 @@ void SDZ::AdjacencyListGraph::ClearMap()
 		{
 			for (uint y = 0; y < map_size_; y++)
 			{
-				if (map_[x][y] == PATH)
+				if (map_[x][y] != FREE)
 				{
 					map_[x][y] = TAKEN;
 				}

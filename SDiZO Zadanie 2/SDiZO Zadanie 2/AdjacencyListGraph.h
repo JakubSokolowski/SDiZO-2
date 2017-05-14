@@ -61,7 +61,7 @@ namespace SDZ
 		void DisplayMap();
 		void DisplayMapWithId();
 		void DisplayInfo();
-		void DrawPath();
+		void DrawPath(DTS::Vector<uint> &vec);
 		void ClearMap();
 
 		// Traversal & Search
@@ -87,8 +87,8 @@ namespace SDZ
 
 		uint vertices_;
 		uint edges_;
-		uint max_edges_;
-		uint max_edge_weight_;
+		uint edges_max_num_;
+		uint edge_max_weight_;
 		Vertex *adj_tab_;	
 
 		void ClearGraph();
