@@ -22,60 +22,86 @@ namespace SDZ
 	{
 
 	public:
+
+		//Constructors 
+
 		IncidenceMatrixGraph();
+		IncidenceMatrixGraph(std::string filename, bool is_directed, bool is_euclidean);
+		IncidenceMatrixGraph(uint vertices, double density,bool is_directed, bool is_euclidean);
+		
+		void SetParameters(uint vertices, double density, bool is_directed, bool is_euclidean);
+
 		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
 		~IncidenceMatrixGraph();
 
 		void AddEdge(uint origin, uint destination, uint weight);
 		uint AStarDistanceSearch(uint origin, uint destination, Heuristic h);
+		DTS::Vector<uint> AStarPathSearch(uint origin, uint destination, Heuristic h);
 		uint FordFulkerson(uint source, uint sink);
 		uint FindEdgeDestination(uint vertex, uint edge);
 		int GetEdgeWeight(uint source, uint destination);
 		int GetEdgeId(uint source, uint destination);
 		void DisplayMatrix();
 		void DisplayWeights();
-		bool FordFulkersonBFS(uint source, uint destination, int path[]);
+	
 		bool IsConnected(uint origin, uint destination);
+
+		void DisplayMap();
+		void DisplayMapWithId();
+		void DrawPath(DTS::Vector<uint> &vec);
+		void DisplayInfo();
 
 	private:
 
-		//Array that holds graph representation [vertices_][edges_]
 		int **matrix_;
-		//Constructor flags
-		bool is_directed, is_euclidean;
-		//Number of vertices
+		bool is_directed_, is_euclidean_;
 		uint vertices_;
-		//Number of edges
 		uint edges_;
-		//Current number of edges
 		uint current_edges_;
-		//Array that holds the weights of edges
+		uint edges_max_num_;
+		uint edge_max_weight_;
 		int *weights;
-
-		//X Y map with randomly placed vertices
-		int **map_;
-		//X Y coordinates of vertices
+		
 		DTS::Vector<std::pair<uint, uint>> coordinates_;
+	
 
 		//Chosen heuristic function
 		SDZ::Heuristic heuristic_;
 
 		bool IsValidEdge(uint origin, uint destination);
 
-		
+		//Random Graph Generation
+
 		void MakeConnected();
 		void GenerateEdges(double density);
 		void GenerateCoordinates();
 		uint CalculateMapSize();
+
+		void ClearGraph();
+
+		//Map Generation & Display
+
+		int **map_;
+		uint map_size_;
+
 		void SetCoordinates(uint vertex, uint X, uint Y);
+	
+		void ClearMap();
+		uint FindVertex(uint x, uint y);
+		uint GetNumberOfDigits(uint number);
+
+		uint CalculateNumberOfEdges(uint vertices,double density);
+	
 		//A star
+
 		void SetHeuristic(Heuristic h);
 		uint GetDistance(uint source, uint destination);
 		uint GetManhattanHeuristic(uint source, uint destination);
 		uint GetEuclideanHeuristic(uint source, uint destination);
 		uint GetHeuristicValue(uint source, uint destination);
-		//FordFulerson
-		
+
+		//Ford-Fulkerson
+		bool FordFulkersonBFS(uint source, uint destination, int path[]);
 	};
 
 }

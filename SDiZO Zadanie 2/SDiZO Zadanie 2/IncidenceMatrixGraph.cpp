@@ -132,6 +132,8 @@ void SDZ::IncidenceMatrixGraph::SetParameters(uint vertices, double density, boo
 
 	vertices_ = vertices;
 	is_directed_ = is_directed;
+	is_euclidean_ = is_euclidean;
+
 	//Create Matrix
 	matrix_ = new int *[vertices_];
 
@@ -210,15 +212,24 @@ void IncidenceMatrixGraph::AddEdge(uint origin, uint destination, uint weight)
 			if (is_directed_)
 			{
 				matrix_[origin][current_edges_] = START;
-				matrix_[destination][current_edges_] = START;			
+				matrix_[destination][current_edges_] = END;
+				weights[current_edges_] = weight;
+				++current_edges_;
 			}
 			else
 			{
+				//Undirected Graph (for make Connected method)
+
 				matrix_[origin][current_edges_] = START;
 				matrix_[destination][current_edges_] = END;
+				weights[current_edges_] = weight;
+				++current_edges_;
+
+				matrix_[destination][current_edges_] = START;
+				matrix_[origin][current_edges_] = END;
+				weights[current_edges_] = weight;
+				++current_edges_;
 			}
-			weights[current_edges_] = weight;
-			++current_edges_;
 		}		
 	}
 }
@@ -456,8 +467,6 @@ void SDZ::IncidenceMatrixGraph::MakeConnected()
 	if (old)
 		is_directed_ = false;
 
-	DisplayInfo();
-
 	DTS::Vector<bool> alredy_connected(vertices_, false);
 
 	std::random_device rd;
@@ -508,14 +517,20 @@ void SDZ::IncidenceMatrixGraph::GenerateEdges(double density)
 	std::uniform_int_distribution<uint> uni(0, 100);
 	std::uniform_int_distribution<uint> weight(1, edge_max_weight_);
 
-	while (current_edges_ != desired_edges)
+	while (current_edges_ <= desired_edges)
 	{
+		if (current_edges_ == desired_edges)
+			break;
 		for (uint i = 0; i < vertices_; i++)
 		{
+			if(current_edges_ == desired_edges)
+				break;
 			for (uint j = 0; j < vertices_; j++)
 			{
 				if (i == j)
 					continue;
+				if (current_edges_ == desired_edges)
+					break;
 				uint value = uni(rng);
 				if (value < threshold)
 				{
@@ -681,12 +696,12 @@ void SDZ::IncidenceMatrixGraph::DisplayMapWithId()
 				}
 				if (map_[x][y] == PATH_START)
 				{
-					SetConsoleTextAttribute(hConsole, 15);
-					std::cout << std::setw(print_width) << (char)254u;
+					SetConsoleTextAttribute(hConsole, 9);
+					std::cout << std::setw(print_width) << FindVertex(x, y);
 				}
 				if (map_[x][y] == PATH_FINISH)
 				{
-					SetConsoleTextAttribute(hConsole, 10);
+					SetConsoleTextAttribute(hConsole, 9);
 					std::cout << std::setw(print_width) << FindVertex(x, y);
 					SetConsoleTextAttribute(hConsole, 15);
 				}
@@ -703,8 +718,8 @@ void SDZ::IncidenceMatrixGraph::DrawPath(DTS::Vector<uint>& vec)
 	{
 		map_[coordinates_.at(it).first][coordinates_.at(it).second] = PATH;
 	}
-	map_[coordinates_.at(0).first][coordinates_.at(0).second] = PATH_START;
-	map_[coordinates_.at(vec.size()-1).first][coordinates_.at(vec.size()-1).second] = PATH_FINISH;
+	map_[coordinates_.at(vec.at(0)).first][coordinates_.at(vec.at(0)).second] = PATH_START;
+	map_[coordinates_.at(vec.at(vec.size()-1)).first][coordinates_.at(vec.at(vec.size() - 1)).second] = PATH_FINISH;
 }
 
 
@@ -716,7 +731,7 @@ void SDZ::IncidenceMatrixGraph::ClearMap()
 		{
 			for (uint y = 0; y < map_size_; y++)
 			{
-				if (map_[x][y] == PATH)
+				if (map_[x][y] != FREE)
 				{
 					map_[x][y] = TAKEN;
 				}
