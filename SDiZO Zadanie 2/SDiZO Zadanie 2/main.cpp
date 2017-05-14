@@ -15,22 +15,14 @@
 #include "PerformanceTests.h"
 #include <iostream>
 #include <iomanip>
-using namespace SDZ;
 
+using namespace SDZ;
 
 typedef AdjacencyListGraph ALG;
 typedef IncidenceMatrixGraph IMG;
 
 void DisplayMenu()
 {
-	//Wybór Algorytmu A star, Primm z Kopcem Fibb, Ford - fulkerson
-			//Wybór reprezentacji - Lista S¹siedztwa, Macierz Incydencji
-				//Wczytaj z pliku
-				//Wygeneruj
-				//Wyswietl
-	
-	
-
 	ALG l_graph = ALG();
 	IMG m_graph = IMG();
 
@@ -474,182 +466,12 @@ void DisplayMenu()
 	} while (algorithm_selection != '0');
 }
 
-void AdjacencyMatrixTest()
-{
-	// Ford - fulkerson. For graph below Max flow should be 23
-
-	AdjacencyListGraph test_graph = AdjacencyListGraph(6, DIRECTED, NO_COORDINATES);
-	test_graph.AddEdge(0, 1, 16);
-	test_graph.AddEdge(0, 2, 13);
-	test_graph.AddEdge(1, 2, 10);
-	test_graph.AddEdge(1, 3, 12);
-	test_graph.AddEdge(2, 1, 4);
-	test_graph.AddEdge(2, 4, 14);
-	test_graph.AddEdge(3, 2, 9);
-	test_graph.AddEdge(3, 5, 20);
-	test_graph.AddEdge(4, 3, 7);
-	test_graph.AddEdge(4, 5, 4);
-
-	test_graph.DisplayInfo();
-	test_graph.DisplayEdges();
-
-	std::cout << "Maximum flow from vertex 0 to 5 : " << test_graph.FordFulkerson(0, 5) << std::endl;
-
-	//Prim with Fibonacci heap. For graph below MST :
-	//0-1 , 1-2 / 0-7 , 2-3, 3-4, 2-5, 5-6, 6-7, 2-8	
-
-	test_graph.SetParameters(9, UNDIRECTED, NO_COORDINATES);
-
-	test_graph.AddEdge(0, 1, 4);
-	test_graph.AddEdge(0, 7, 8);
-	test_graph.AddEdge(1, 2, 8);
-	test_graph.AddEdge(1, 7, 11);
-	test_graph.AddEdge(2, 3, 7);
-	test_graph.AddEdge(2, 8, 2);
-	test_graph.AddEdge(2, 5, 4);
-	test_graph.AddEdge(3, 4, 9);
-	test_graph.AddEdge(3, 5, 14);
-	test_graph.AddEdge(4, 5, 10);
-	test_graph.AddEdge(5, 6, 2);
-	test_graph.AddEdge(6, 7, 1);
-	test_graph.AddEdge(6, 8, 6);
-	test_graph.AddEdge(7, 8, 7);
-
-	test_graph.FHPrimMST();
-
-	// A star search
-
-	test_graph.SetParameters(9, DIRECTED, NO_COORDINATES);
-	test_graph.AddEdge(0, 1, 4);
-	test_graph.AddEdge(0, 7, 8);
-	test_graph.AddEdge(1, 2, 8);
-	test_graph.AddEdge(1, 7, 11);
-	test_graph.AddEdge(2, 3, 7);
-	test_graph.AddEdge(2, 8, 2);
-	test_graph.AddEdge(2, 5, 4);
-	test_graph.AddEdge(3, 4, 9);
-	test_graph.AddEdge(3, 5, 14);
-	test_graph.AddEdge(4, 5, 10);
-	test_graph.AddEdge(5, 6, 2);
-	test_graph.AddEdge(6, 7, 1);
-	test_graph.AddEdge(6, 8, 6);
-	test_graph.AddEdge(7, 8, 7);
-
-	for (uint it = 1; it < 9; it++)
-	{
-		std::cout << "Shortest path from 0 to " << it << " is: " << test_graph.AStarDistanceSearch(0, it, SDZ::DIJKSTRA) << std::endl;
-	}
-	
-	DTS::Vector<uint> list = test_graph.AStarPathSearch(0, 5, SDZ::DIJKSTRA);
-	for (auto it : list)
-	{
-		std::cout << it << " ";
-	}
-	std::cout << "\n\nShortest path from 0 to 7: " << test_graph.AStarDistanceSearch(0, 5, SDZ::DIJKSTRA);
-
-}
-void IncidenceMatrixTest()
-{
-	// Ford - fulkerson. For graph below Max flow should be 23
-
-	IncidenceMatrixGraph test_graph = IncidenceMatrixGraph(6, 10);
-	test_graph.AddEdge(0, 1, 16);
-	test_graph.AddEdge(0, 2, 13);
-	test_graph.AddEdge(1, 2, 10);
-	test_graph.AddEdge(1, 3, 12);
-	test_graph.AddEdge(2, 1, 4);
-	test_graph.AddEdge(2, 4, 14);
-	test_graph.AddEdge(3, 2, 9);
-	test_graph.AddEdge(3, 5, 20);
-	test_graph.AddEdge(4, 3, 7);
-	test_graph.AddEdge(4, 5, 4);
-
-	std::cout << test_graph.IsConnected(1, 3) << std::endl;
-	std::cout << test_graph.IsConnected(3, 1) << std::endl;
-	std::cout << test_graph.IsConnected(5, 4) << std::endl;
-	std::cout << test_graph.IsConnected(4, 5) << std::endl;
-
-	test_graph.DisplayMatrix();
-	test_graph.DisplayWeights();
-
-	std::cout << "Maximum flow from vertex 0 to 5 : " << test_graph.FordFulkerson(0, 5) << std::endl;
-
-	// A star search
-	IncidenceMatrixGraph test_graph2 = IncidenceMatrixGraph(9, 14);
-	test_graph2.AddEdge(0, 1, 4);
-	test_graph2.AddEdge(0, 7, 8);
-	test_graph2.AddEdge(1, 2, 8);
-	test_graph2.AddEdge(1, 7, 11);
-	test_graph2.AddEdge(2, 3, 7);
-	test_graph2.AddEdge(2, 8, 2);
-	test_graph2.AddEdge(2, 5, 4);
-	test_graph2.AddEdge(3, 4, 9);
-	test_graph2.AddEdge(3, 5, 14);
-	test_graph2.AddEdge(4, 5, 10);
-	test_graph2.AddEdge(5, 6, 2);
-	test_graph2.AddEdge(6, 7, 1);
-	test_graph2.AddEdge(6, 8, 6);
-	test_graph2.AddEdge(7, 8, 7);
-
-	std::cout << std::endl;
-	for (uint it = 1; it < 9; it++)
-	{
-		std::cout
-			<< "Shortest path from 0 to " << it << " is: " << test_graph2.AStarDistanceSearch(0, it, Heuristic::DIJKSTRA) << std::endl;
-	}
-
-	IncidenceMatrixGraph test_graph3 = IncidenceMatrixGraph(700, 1, true, true);
-	test_graph3.DisplayInfo();
-	for (int i = 1; i < 10; i++)
-	{
-		DTS::Vector<uint> vec = test_graph3.AStarPathSearch(0, i, Heuristic::DIJKSTRA);
-		test_graph3.DrawPath(vec);
-		std::cout << std::endl;
-		for (auto it : vec)
-			std::cout << it << " ";
-		std::cout << std::endl;
-		test_graph3.DisplayMapWithId();
-	}
-	getchar();
-}
 int main()
 {
-	//AdjacencyMatrixTest();
+	//AdjacencyListTest();
 	//IncidenceMatrixTest();
 	//GenerateTestSamples();
 	DisplayMenu();
-
-	/*StartCounter();
-	Sleep(1000);
-	std::cout<<GetCounter();
-	*/
-	uint source = 12;
-	uint destination = 456;
-
-	std::cout.precision(10);
-	std::cout << "\nSTTAAAARRTTT\n";
-	StartCounter();
-	AdjacencyListGraph graph = AdjacencyListGraph(1000, 0.9, true, true, true);
-	std::cout << std::fixed << "Normal Graph Generation for dense graph " << GetCounter() << std::endl;
-	graph.DisplayInfo();
-
-	StartCounter();
-	AdjacencyListGraph graph2 = AdjacencyListGraph(5000, 0.9, true, true, false);
-	std::cout << std::fixed << "Fast Graph Generation for dense graph " << GetCounter() << std::endl;
-	graph.DisplayInfo();
-
-	std::cout << "\nPrim Minimum Spanning Tree with binary heap based priority queue: \n";
-	StartCounter();
-	graph.PQPrimMST();
-	std::cout << "Time: " << GetCounter();
-	std::cout << "\nPrim Minimum Spanning Tree with fibonacci heap based priority queue: \n";
-	StartCounter();
-	graph.FHPrimMST();
-	std::cout  <<  "Time: " << GetCounter();
-	
-
-	std::cout << "\nSkonczono pisac\n\n";
-
 	getchar();
     return 0;
 }
