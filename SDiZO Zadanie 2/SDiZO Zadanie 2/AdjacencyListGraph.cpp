@@ -120,6 +120,7 @@ SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool 
 	MarkAllNotVisited();
 }
 
+//Creates graph with given amount of vertices and density. If is_euclidean_ flag is set, generate X,Y coordinates for vertices,
 SDZ::AdjacencyListGraph::AdjacencyListGraph(uint vertices, double density, bool is_directed, bool is_euclidean, bool fast_generation)
 {
 	vertices_ = vertices;
@@ -165,6 +166,7 @@ void SDZ::AdjacencyListGraph::ClearGraph()
 	map_size_ = 0;
 }
 
+//Empties graph and generates new one with given parameters
 void SDZ::AdjacencyListGraph::SetParameters(uint vertices, double density, bool is_directed, bool is_euclidean)
 {
 	ClearGraph();
@@ -198,6 +200,7 @@ void SDZ::AdjacencyListGraph::SetParameters(uint vertices, double density, bool 
 	MarkAllNotVisited();
 }
 
+//Empties graph and generates new one with given parameters
 void SDZ::AdjacencyListGraph::SetParameters(uint vertices, bool is_directed, bool is_euclidean)
 {
 	ClearGraph();
@@ -251,6 +254,7 @@ void SDZ::AdjacencyListGraph::SetMaxWeight(uint max_weight)
 	edge_max_weight_ = max_weight;
 }
 
+//Creates new graph and writes it to file
 void SDZ::AdjacencyListGraph::WriteToFile(uint vertices, double density, bool is_directed, bool is_euclidean,std::string filename)
 {
 	SetParameters(vertices, density, is_directed, is_euclidean);
@@ -271,6 +275,7 @@ void SDZ::AdjacencyListGraph::WriteToFile(uint vertices, double density, bool is
 	file.close();
 }
 
+//Writes the existing graph to file
 void SDZ::AdjacencyListGraph::WriteToFile(std::string filename)
 {
 	std::ofstream file(filename);
@@ -290,6 +295,7 @@ void SDZ::AdjacencyListGraph::WriteToFile(std::string filename)
 	file.close();
 }
 
+//Empties the graph, creates new one using information fro file
 void SDZ::AdjacencyListGraph::ReadFromFile(std::string filepath, bool is_directed, bool is_euclidean)
 {
 	//Assign the graph parameters needed for proper graph construction
@@ -336,26 +342,6 @@ void SDZ::AdjacencyListGraph::ReadFromFile(std::string filepath, bool is_directe
 	}
 	is_directed_ = is_directed;
 	file.close();
-}
-
-uint SDZ::AdjacencyListGraph::GetX(uint vertex)
-{
-	return adj_tab_[vertex].x_;
-}
-
-uint SDZ::AdjacencyListGraph::GetY(uint vertex)
-{
-	return adj_tab_[vertex].y_;
-}
-
-void SDZ::AdjacencyListGraph::SetX(uint vertex, uint value)
-{
-	adj_tab_[vertex].x_ = value;
-}
-
-void SDZ::AdjacencyListGraph::SetY(uint vertex, uint value)
-{
-	adj_tab_[vertex].y_ = value;
 }
 
 //Displays all the edges in graph
@@ -465,42 +451,6 @@ DTS::List<uint> SDZ::AdjacencyListGraph::BFT(uint start_id, uint finish_id)
 	return came_from;
 }
 
-uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
-{
-	CopyResidualWeights();
-	uint curr_node, parent_node;
-	uint max_flow = 0;
-	//Filled by BFS
-	int *path = new int [vertices_];	
-
-	// Augument the flow while there is a path from source to sink
-
-	while (FordFulkersonBFS(source, sink, path))
-	{
-		//Find the minimum residual capacity of the edges along the
-		//path filled by BFS.
-
-		uint path_flow = INF;
-
-		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
-		{
-			parent_node = path[curr_node];
-			path_flow = min(path_flow, adj_tab_[parent_node].GetResidualWeight(curr_node));
-		}
-		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
-		{
-			parent_node = path[curr_node];
-
-			//Substract path flow from reverse path
-			adj_tab_[parent_node].AddToResidualWeight(curr_node, path_flow * -1);
-			//And add to path
-			adj_tab_[curr_node].AddToResidualWeight(parent_node, path_flow);
-		}
-		//Add to max_flow
-		max_flow += path_flow;
-	}
-	return max_flow;
-}
 
 //Marks all nodes as not visited
 void SDZ::AdjacencyListGraph::MarkAllNotVisited()
@@ -545,6 +495,26 @@ void SDZ::AdjacencyListGraph::GenerateCoordinates()
 			}
 		}		
 	}	
+}
+
+uint SDZ::AdjacencyListGraph::GetX(uint vertex)
+{
+	return adj_tab_[vertex].x_;
+}
+
+uint SDZ::AdjacencyListGraph::GetY(uint vertex)
+{
+	return adj_tab_[vertex].y_;
+}
+
+void SDZ::AdjacencyListGraph::SetX(uint vertex, uint value)
+{
+	adj_tab_[vertex].x_ = value;
+}
+
+void SDZ::AdjacencyListGraph::SetY(uint vertex, uint value)
+{
+	adj_tab_[vertex].y_ = value;
 }
 
 //Displays map of vertices. 
@@ -653,6 +623,7 @@ void SDZ::AdjacencyListGraph::DisplayMapWithId()
 	}
 }
 
+//Displays the basci graph info
 void SDZ::AdjacencyListGraph::DisplayInfo()
 {
 	std::cout << std::endl;
@@ -772,6 +743,7 @@ void SDZ::AdjacencyListGraph::GenerateEdges(double density, uint max_weight)
 	}
 }
 
+//Connects randomly graph with random weight edges, until the density is reached
 void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 {
 	if (edge_max_weight_ <= 0)
@@ -805,6 +777,7 @@ void SDZ::AdjacencyListGraph::GenerateEdgesFast(double density)
 					continue;
 				if (edges_ == desired_edges)
 					break;
+				//Connect the edges ith probability
 				uint value = uni(rng);
 				if (value < threshold)
 				{
@@ -872,14 +845,13 @@ void SDZ::AdjacencyListGraph::MakeConnected()
 //Returns the list containing the shortest path
 DTS::Vector<uint> SDZ::AdjacencyListGraph::AStarPathSearch(uint start, uint goal, Heuristic h)
 {
+
 	std::unordered_map<uint, uint> came_from, cost_so_far;
 	SetHeuristic(h);
 	
 	//Create Queue for vertices and coresponding priorities 
 	DTS::PriorityQueue<uint, uint> frontier;
 
-	//Create list that holds traversed path
-	DTS::List<uint> path = DTS::List<uint>();
 
 	frontier.Insert(start, 0);
 	came_from[start] = start;
@@ -887,31 +859,36 @@ DTS::Vector<uint> SDZ::AdjacencyListGraph::AStarPathSearch(uint start, uint goal
 
 	while (!frontier.IsEmpty())
 	{
-		//Deque a vertex from queue and print it's id
+		//Deque a vertex with lowest priority from queue
 		auto current = frontier.GetFront();	
-		path.PushBack(current);
 		frontier.PopFront();
 
 		//If the goal is reached, stop early
-		if (current == goal)
-		{
+		if (current == goal)		
 			break;
-		}
-		path.PushBack(current);
 
-		//Iterate through all the neighbour nodes
+		//Iterate through all the successor nodes of vertex
 		for (auto it = adj_tab_[current].list_.begin(); it != adj_tab_[current].list_.end(); it++)
 		{
+			//Set new cost of succesor node to the cost of path so far 
+			//plus weight of connection from current to succesor 
 			uint new_cost = cost_so_far[current] + it->weight_;
-			//If node is marked as closed, move over to the next one
-			if (!cost_so_far.count(it->destination_id) || new_cost < cost_so_far[it->destination_id]) {
+
+			//If the cost so far for node is empty, or new_cost is lower tha cost so far for that node
+			if (!cost_so_far.count(it->destination_id) || new_cost < cost_so_far[it->destination_id])
+			{
+				//Update the cost of path to the node
 				cost_so_far[it->destination_id] = new_cost;
-				uint priority = new_cost + GetHeuristicValue(it->destination_id, goal);		
+				//Calculate the priority of node
+				uint priority = new_cost + GetHeuristicValue(it->destination_id, goal);	
+				//Insert the node into queue
 				frontier.Insert(it->destination_id, priority);	
+				//Add node to path
 				came_from[it->destination_id] = current;
 			}
 		}
 	}
+	//Copy the path from map to array
 	DTS::Vector<uint> rec_path;
 	uint curr = goal;
 	rec_path.push_back(curr);
@@ -920,15 +897,21 @@ DTS::Vector<uint> SDZ::AdjacencyListGraph::AStarPathSearch(uint start, uint goal
 		curr = came_from[curr];
 		rec_path.push_back(curr);
 	}
-	path.PushBack(start);
+	//Reverse the path
 	std::reverse(rec_path.begin(), rec_path.end());
 
 	return rec_path;
 }
 
+//Searches the shortest path from start to finish using A* algorithm. 
+//Avalible heuristics - Manhattan Distance, Euclidean Distance
+//Returns the distance of path
 uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id, Heuristic h)
 {
-	std::unordered_map<uint, uint> came_from, cost_so_far;
+	//Stores path from all nodes
+	std::unordered_map<uint, uint> came_from;
+	//Stores the cost of all paths
+	std::unordered_map<uint, uint> cost_so_far;
 	SetHeuristic(h);
 
 	//Create Queue for ids 
@@ -943,7 +926,7 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 
 	while (!p_queue.IsEmpty())
 	{
-		//Deque a vertex from queue and print it's id
+		//Deque a vertex with lowest priority from queue
 		current = p_queue.GetFront();
 		p_queue.PopFront();
 
@@ -951,16 +934,23 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 		if (current == finish_id)
 			break;	
 
-		//Iterate through all the neighbour nodes
+		//Iterate through all the succesor nodes
 		for (auto it = adj_tab_[current].list_.begin(); it != adj_tab_[current].list_.end(); it++)
 		{
+			//Set new cost of succesor node to the cost of path so far 
+			//plus weight of connection from current to succesor 
 			uint new_cost = cost_so_far[current] + it->weight_;
-			//If node is marked as closed, move over to the next one
+			
+			//If the cost so far for node is empty, or new_cost is lower tha cost so far for that node
 			if (!cost_so_far.count(it->destination_id) || new_cost < cost_so_far[it->destination_id])
 			{
+				//Update the cost of path to the node
 				cost_so_far[it->destination_id] = new_cost;
+				//Calculate the priority of node
 				uint priority = new_cost + GetHeuristicValue(it->destination_id, finish_id);
+				//Insert the node into queue
 				p_queue.Insert(it->destination_id, priority);
+				//Add node to path
 				came_from[it->destination_id] = current;
 			}
 		}
@@ -968,6 +958,7 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 	return cost_so_far[finish_id];
 }
 
+//Finds the MST of graph using fibonacci heap based priority queue
 void SDZ::AdjacencyListGraph::FHPrimMST()
 {
 	//Create a heap to store vertices 
@@ -1020,8 +1011,10 @@ void SDZ::AdjacencyListGraph::FHPrimMST()
 	}	
 }
 
+//Finds the MST of graph using binary heap based priority queue
 void SDZ::AdjacencyListGraph::PQPrimMST()
 {
+
 	//Create a heap to store vertices 
 	DTS::PriorityQueue<uint, uint> pqueue;
 
@@ -1116,8 +1109,44 @@ uint SDZ::AdjacencyListGraph::CalculateMapSize()
 	return uint(ceil(sqrt(vertices_ * 4)));
 }
 
+//Returns the max flow from source to sink
+uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
+{
+	CopyResidualWeights();
+	uint curr_node, parent_node;
+	uint max_flow = 0;
+	//Filled by BFS
+	int *path = new int[vertices_];
 
+	// Augument the flow while there is a path from source to sink
 
+	while (FordFulkersonBFS(source, sink, path))
+	{
+		//Find the minimum residual capacity of the edges along the
+		//path filled by BFS.
+
+		uint path_flow = INF;
+
+		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
+		{
+			parent_node = path[curr_node];
+			path_flow = min(path_flow, adj_tab_[parent_node].GetResidualWeight(curr_node));
+		}
+		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
+		{
+			parent_node = path[curr_node];
+			//Substract path flow from reverse path
+			adj_tab_[parent_node].AddToResidualWeight(curr_node, path_flow * -1);
+			//And add to path
+			adj_tab_[curr_node].AddToResidualWeight(parent_node, path_flow);
+		}
+		//Add to max_flow
+		max_flow += path_flow;
+	}
+	return max_flow;
+}
+
+//Returns true if there exits an augumenting path in graph
 bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int path[])
 {
 	//Create Queue for ids 
@@ -1133,7 +1162,7 @@ bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int
 
 	while (!queue.IsEmpty())
 	{
-		//Deque a vertex from queue and print it's id
+		//Deque a vertex from queue 
 		uint curr_ver = queue.GetFront();
 		queue.PopFront();	
 
@@ -1155,6 +1184,7 @@ bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int
 	return (visited[destination]==true);
 }
 
+//Copies the weights into residual weihts so that ford-fulkerson can be used multiple times on the same graph
 void SDZ::AdjacencyListGraph::CopyResidualWeights()
 {
 	for (uint it = 0; it < vertices_; it++)
@@ -1197,7 +1227,6 @@ uint SDZ::AdjacencyListGraph::GetEuclideanHeuristic(uint source, uint destinatio
 //Returns the value of current heuristic function
 uint SDZ::AdjacencyListGraph::GetHeuristicValue(uint source, uint destination)
 {
-	// TODO change to switch
 	if (heuristic_ == MANHATTAN)
 	{
 		return GetManhattanHeuristic(source, destination);
