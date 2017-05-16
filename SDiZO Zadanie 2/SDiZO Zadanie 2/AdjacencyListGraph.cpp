@@ -502,20 +502,6 @@ uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
 	return max_flow;
 }
 
-//Returns Vertex with given id
-Vertex SDZ::AdjacencyListGraph::GetVertex(uint vertex_id)
-{
-	return adj_tab_[vertex_id];
-	
-}
-
-//Marks all nodes as visited
-void SDZ::AdjacencyListGraph::MarkAllVisited()
-{
-	for (uint it = 0; it < vertices_; it++)
-		adj_tab_[it].visited_ = true;
-}
-
 //Marks all nodes as not visited
 void SDZ::AdjacencyListGraph::MarkAllNotVisited()
 {
@@ -946,22 +932,20 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 	SetHeuristic(h);
 
 	//Create Queue for ids 
-	DTS::PriorityQueue<uint, uint> frontier;
+	DTS::PriorityQueue<uint, uint> p_queue;
 
-	//Mark all vertices not visited
-	MarkAllNotVisited();
 	//Current id 
 	uint current = start_id;
 
-	frontier.Insert(start_id, 0);
+	p_queue.Insert(start_id, 0);
 	came_from[start_id] = start_id;
 	cost_so_far[start_id] = 0;
 
-	while (!frontier.IsEmpty())
+	while (!p_queue.IsEmpty())
 	{
 		//Deque a vertex from queue and print it's id
-		current = frontier.GetFront();
-		frontier.PopFront();
+		current = p_queue.GetFront();
+		p_queue.PopFront();
 
 		//If the goal is reached, stop early
 		if (current == finish_id)
@@ -976,7 +960,7 @@ uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id,
 			{
 				cost_so_far[it->destination_id] = new_cost;
 				uint priority = new_cost + GetHeuristicValue(it->destination_id, finish_id);
-				frontier.Insert(it->destination_id, priority);
+				p_queue.Insert(it->destination_id, priority);
 				came_from[it->destination_id] = current;
 			}
 		}
@@ -1132,17 +1116,7 @@ uint SDZ::AdjacencyListGraph::CalculateMapSize()
 	return uint(ceil(sqrt(vertices_ * 4)));
 }
 
-//Mark vertex as closed
-void SDZ::AdjacencyListGraph::MarkClosed(uint node_id)
-{
-	adj_tab_[node_id].is_closed_ = true;
-}
 
-//Mark vertex as open
-void SDZ::AdjacencyListGraph::MarkOpen(uint node_id)
-{
-	adj_tab_[node_id].is_open_ = true;
-}
 
 bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int path[])
 {

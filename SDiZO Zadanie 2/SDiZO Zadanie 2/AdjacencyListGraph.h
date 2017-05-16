@@ -49,11 +49,7 @@ namespace SDZ
 		void WriteToFile(std::string filename);
 		void ReadFromFile(std::string filename, bool is_directed, bool is_euclidean);
 
-		//Access
-		uint GetX(uint vertex);
-		uint GetY(uint vertex);
-		void SetX(uint vertex,uint value);
-		void SetY(uint vertex,uint value);
+		
 
 		// Display 
 
@@ -80,8 +76,6 @@ namespace SDZ
 		// Maximum Flow
 		uint FordFulkerson(uint source, uint sink);
 
-		Vertex GetVertex(uint vertex_id);	
-
 	private:
 
 		//Graph structure & information
@@ -91,9 +85,7 @@ namespace SDZ
 		uint edges_max_num_;
 		uint edge_max_weight_;
 		Vertex *adj_tab_;	
-
-		void ClearGraph();
-
+		
 		// Construcor flags
 
 		bool is_directed_;
@@ -101,31 +93,35 @@ namespace SDZ
 
 		uint FindVertex(uint x, uint y);
 
-		// Graph connection & Display
+		// Map Generation
 
 		int **map_;
 		uint map_size_;
 
+		void ClearGraph();
 		uint CalculateMapSize();
+		void GenerateCoordinates();
 		uint GetNumberOfDigits(unsigned n);
 
-		void GenerateCoordinates();
+		uint GetX(uint vertex);
+		uint GetY(uint vertex);
+		void SetX(uint vertex, uint value);
+		void SetY(uint vertex, uint value);
+	
+		//Graph generation
+
 		uint GetDistance(uint source, uint destination);
 		void GenerateEdges(double density);
 		void GenerateEdges(double density, uint max_weight);
 		void GenerateEdgesFast(double density);
 		void MakeConnected();
 
-		void MarkAllVisited();
 		void MarkAllNotVisited();
-		void MarkAsPathVertex(uint node_id);
-		void MarkClosed(uint node_id);
-		void MarkOpen(uint node_id);
+		
 
 		//Ford Fulkerson
 		bool FordFulkersonBFS(uint source, uint sink,int path[]);
-		void CopyResidualWeights();
-		//Prim		
+		void CopyResidualWeights();	
 
 		//A* 
 
@@ -135,6 +131,6 @@ namespace SDZ
 		uint GetManhattanHeuristic(uint source, uint destination);
 		uint GetEuclideanHeuristic(uint source, uint destination);
 		uint GetHeuristicValue(uint source, uint destination);	
-
+		void MarkAsPathVertex(uint node_id);
 	};
 }
