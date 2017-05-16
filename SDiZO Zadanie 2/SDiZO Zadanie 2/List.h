@@ -3,6 +3,9 @@
 
 namespace DTS
 {
+
+	//Simple template based doubly linked list implementation
+	// T - type of element stored in list
 	template <typename T>
 	struct ListNode
 	{
@@ -140,7 +143,6 @@ namespace DTS
 	};
 
 
-
 	template<typename T>
 	inline List<T>::List(const List<T>&other)
 	{
@@ -182,7 +184,6 @@ namespace DTS
 	template<typename T>
 	inline List<T> List<T>::operator=(List<T>&&)
 	{
-		std::cout << "lmao2";
 		return List<T>();
 	}
 
@@ -289,13 +290,6 @@ namespace DTS
 
 	}
 
-	template<>
-	inline void List<unsigned int>::Display()
-	{
-		for (auto it = begin(); it != end(); it++)
-			std::cout << *it << " ";
-	}
-
 	template<typename T>
 	inline T & List<T>::GetFront()
 	{
@@ -306,5 +300,12 @@ namespace DTS
 	inline T & List<T>::GetBack()
 	{
 		return tail_->data_;
+	}
+
+	template<>
+	inline void List<unsigned int>::Display()
+	{
+		for (auto it = begin(); it != end(); it++)
+			std::cout << *it << " ";
 	}
 }

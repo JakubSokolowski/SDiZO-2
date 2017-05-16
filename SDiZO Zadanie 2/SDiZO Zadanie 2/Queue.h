@@ -2,6 +2,8 @@
 
 namespace DTS
 {
+	//First in First out doubly linked list based queue
+	//T - value stored in queue
 	template <typename T>
 	struct QueueNode
 	{
@@ -105,8 +107,6 @@ namespace DTS
 		QueueNode<T> *n = new QueueNode<T>(e);
 
 		size_++;
-		// no operation below this should throw
-		// as state of the list has changed and memory allocated
 
 		n->next_ = pos;
 

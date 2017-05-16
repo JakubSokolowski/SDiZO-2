@@ -11,8 +11,13 @@ namespace DTS
 
 	/*Implementation of fibonacci heap from 
 	T.H. Cormen, C.E. Leiserson, R.L. Rivest, C. Stein, “Fibonacci Heaps” 
-	in "Introduction to Algorithms" ch. 20, pp.476-497  */
+	in "Introduction to Algorithms" ch. 19, pp.505-530  */
 
+
+	//Fibonacci heap implementation
+	//T - value stored in heap
+	//P - key
+	//The value with the smallest key is the minimum node of a heap
 	template<class T, class P>
 	class FibonacciHeap
 	{
@@ -147,17 +152,14 @@ namespace DTS
 		{
 			return Push(val, key, nullptr);
 		}
-
-		/*
-		* The minimum node of the heap.
-		*/
+		
+		//The minimum node of the heap.	
 		FibNode* GetMinNode()
 		{
 			return min_node_;
 		}
 
-
-		
+		//Inserts a node int the heap
 		void Insert(FibNode *x)
 		{
 
@@ -208,6 +210,7 @@ namespace DTS
 			++size_;
 		}
 
+		//Deletes all child nodes of node
 		void DeleteFibnodes(FibNode *x)
 		{
 			if (!x)
@@ -216,11 +219,8 @@ namespace DTS
 			FibNode *cur = x;
 			while (true)
 			{
-				/*std::cerr << "cur: " << cur << std::endl;
-				std::cerr << "x: " << x << std::endl;*/
 				if (cur->left && cur->left != x)
 				{
-					//std::cerr << "cur left: " << cur->left << std::endl;
 					FibNode *tmp = cur;
 					cur = cur->left;
 					if (tmp->child)
@@ -236,18 +236,21 @@ namespace DTS
 				}
 			}
 		}
-		/*
-		* union_fibheap(H1,H2)
-		* 1. H = MAKE-FIB-HEAP()
-		* 2. H.min = H1.min
-		* 3. concatenate the root list of H2 with the root list of H
-		* 4. if (H1.min == NIL) or (H2.min != NIL and H2.min.key < H1.min.key)
-		* 5. 	H.min = H2.min
-		* 6. H.n = H1.n + H2.n
-		* 7. return H
-		*/
+		
+		//Merges 2 heaps with each other
 		static FibonacciHeap* Merge(FibonacciHeap *H1, FibonacciHeap *H2)
 		{
+			/*
+			* union_fibheap(H1,H2)
+			* 1. H = MAKE-FIB-HEAP()
+			* 2. H.min = H1.min
+			* 3. concatenate the root list of H2 with the root list of H
+			* 4. if (H1.min == NIL) or (H2.min != NIL and H2.min.key < H1.min.key)
+			* 5. 	H.min = H2.min
+			* 6. H.n = H1.n + H2.n
+			* 7. return H
+			*/
+
 			// 1
 			FibonacciHeap* H = new FibonacciHeap();
 			// 2
@@ -272,23 +275,25 @@ namespace DTS
 			return H;
 		}
 
-		/*
-		* extract_min
-		* 1. z = H.min
-		* 2. if z != NIL
-		* 3. 	for each child x of z
-		* 4. 		add x to the root list of H
-		* 5. 		x.p = NIL
-		* 6. 	remove z from the root list of H
-		* 7.		if z == z.right
-		* 8. 		H.min = NIL
-		* 9. 	else H.min = z.right
-		*10. 		CONSOLIDATE(H)
-		*11. 	H.n = H.n - 1
-		*12. return z
-		*/
+		//Extracts the node with min key from the heap, returns the pointer to it
 		FibNode* ExtractMin()
 		{
+			/*
+			* extract_min
+			* 1. z = H.min
+			* 2. if z != NIL
+			* 3. 	for each child x of z
+			* 4. 		add x to the root list of H
+			* 5. 		x.p = NIL
+			* 6. 	remove z from the root list of H
+			* 7.		if z == z.right
+			* 8. 		H.min = NIL
+			* 9. 	else H.min = z.right
+			*10. 		CONSOLIDATE(H)
+			*11. 	H.n = H.n - 1
+			*12. return z
+			*/
+
 			FibNode *z, *x, *next;
 			FibNode ** childList;
 
@@ -344,34 +349,36 @@ namespace DTS
 			return z;
 		}
 
-		/*
-		* consolidate
-		* 1. let A[0 . . D(H.n)] be a new array
-		* 2. for i = 0 to D(H.n)
-		* 3. 	A[i] = NIL
-		* 4. for each node w in the root list of H
-		* 5. 	x = w
-		* 6. 	d = x.degree
-		* 7. 	while A[d] != NIL
-		* 8. 		y = A[d]
-		* 9. 		if x.key > y.key
-		*10.			exchange x with y
-		*11. 		FIB-HEAP-LINK(H,y,x)
-		*12. 		A[d] = NIL
-		*13. 		d = d + 1
-		*14. 	A[d] = x
-		*15. H.min = NIL
-		*16. for i = 0 to D(H.n)
-		*17. 	if A[i] != NIL
-		*18. 		if H.min == NIL
-		*19. 			create a root list for H containing just A[i]
-		*20. 			H.min = A[i]
-		*21. 		else insert A[i] into H's root list
-		*22. 			if A[i].key < H.min.key
-		*23. 				H.min = A[i]
-		*/
+		
 		void Consolidate()
 		{
+			/*
+			* consolidate
+			* 1. let A[0 . . D(H.n)] be a new array
+			* 2. for i = 0 to D(H.n)
+			* 3. 	A[i] = NIL
+			* 4. for each node w in the root list of H
+			* 5. 	x = w
+			* 6. 	d = x.degree
+			* 7. 	while A[d] != NIL
+			* 8. 		y = A[d]
+			* 9. 		if x.key > y.key
+			*10.			exchange x with y
+			*11. 		FIB-HEAP-LINK(H,y,x)
+			*12. 		A[d] = NIL
+			*13. 		d = d + 1
+			*14. 	A[d] = x
+			*15. H.min = NIL
+			*16. for i = 0 to D(H.n)
+			*17. 	if A[i] != NIL
+			*18. 		if H.min == NIL
+			*19. 			create a root list for H containing just A[i]
+			*20. 			H.min = A[i]
+			*21. 		else insert A[i] into H's root list
+			*22. 			if A[i].key < H.min.key
+			*23. 				H.min = A[i]
+			*/
+
 			FibNode* w, *next, *x, *y, *temp;
 			FibNode** A, ** rootList;
 			// Max degree <= log base golden ratio of n
@@ -460,15 +467,16 @@ namespace DTS
 			}
 			delete[] A;
 		}
-
-		/*
-		* LinkHeaps(y,x)
-		* 1. remove y from the root list of heap
-		* 2. make y a child of x, incrementing x.degree
-		* 3. y.mark = FALSE
-		*/
+	
 		void LinkHeaps(FibNode* y, FibNode* x)
 		{
+			/*
+			* LinkHeaps(y,x)
+			* 1. remove y from the root list of heap
+			* 2. make y a child of x, incrementing x.degree
+			* 3. y.mark = FALSE
+			*/
+
 			// 1
 			y->left->right = y->right;
 			y->right->left = y->left;
@@ -492,28 +500,27 @@ namespace DTS
 			y->mark = false;
 		}
 
-
-		/*
-		* decrease_key(x,k)
-		* 1. if k > x.key
-		* 2. 	error "new key is greater than current key"
-		* 3. x.key = k
-		* 4. y = x.p
-		* 5. if y != NIL and x.key < y.key
-		* 6. 	CUT(H,x,y)
-		* 7. 	CASCADING-CUT(H,y)
-		* 8. if x.key < H.min.key
-		* 9. 	H.min = x
-		*/
 		void DecreaseKey(FibNode* x, P k)
 		{
+			/*
+			* decrease_key(x,k)
+			* 1. if k > x.key
+			* 2. 	error "new key is greater than current key"
+			* 3. x.key = k
+			* 4. y = x.p
+			* 5. if y != NIL and x.key < y.key
+			* 6. 	CUT(H,x,y)
+			* 7. 	CASCADING-CUT(H,y)
+			* 8. if x.key < H.min.key
+			* 9. 	H.min = x
+			*/
+
 			FibNode* y;
 
 			// 1
 			if (k > x->key)
 			{
 				// 2
-				// error( "new key is greater than current key" );
 				return;
 			}
 			// 3
@@ -536,15 +543,17 @@ namespace DTS
 			}
 		}
 
-		/*
-		* Cut(x,y)
-		* 1. remove x from the child list of y, decrementing y.degree
-		* 2. add x to the root list of H
-		* 3. x.p = NIL
-		* 4. x.mark = FALSE
-		*/
+		
 		void Cut(FibNode* x, FibNode* y)
 		{
+			/*
+			* Cut(x,y)
+			* 1. remove x from the child list of y, decrementing y.degree
+			* 2. add x to the root list of H
+			* 3. x.p = NIL
+			* 4. x.mark = FALSE
+			*/
+
 			// 1
 			if (x->right == x)
 			{
@@ -571,17 +580,19 @@ namespace DTS
 			x->mark = false;
 		}
 
-		/*
-		* CascadingCut(y)
-		* 1. z = y.p
-		* 2. if z != NIL
-		* 3. 	if y.mark == FALSE
-		* 4. 		y.mark = TRUE
-		* 5. 	else CUT(H,y,z)
-		* 6. 		CASCADING-CUT(H,z)
-		*/
+	
 		void CascadingCut(FibNode* y)
 		{
+			/*
+			* CascadingCut(y)
+			* 1. z = y.p
+			* 2. if z != NIL
+			* 3. 	if y.mark == FALSE
+			* 4. 		y.mark = TRUE
+			* 5. 	else CUT(H,y,z)
+			* 6. 		CASCADING-CUT(H,z)
+			*/
+
 			FibNode* z;
 
 			// 1
@@ -605,10 +616,7 @@ namespace DTS
 			}
 		}
 
-		/*
-		* set to infinity so that it hits the top of the heap, then easily remove.
-		*/
-
+		//Sets the key to infinity, so that it goes to the top of the heap and can be easily removed
 		void RemoveNode(FibNode* x)
 		{
 			DecreaseKey(x, std::numeric_limits<T>::min_());

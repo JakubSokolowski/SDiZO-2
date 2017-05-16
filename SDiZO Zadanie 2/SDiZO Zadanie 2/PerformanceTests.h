@@ -489,17 +489,18 @@ void FordFulkersonList()
 		std::cout << "\nStart for graph with denisty " << graph_density[i];
 		for (int j = 0; j < 5; j++)
 		{
-			std::cout << "\n\tand vertices " << graph_vertices[j];
+			std::cout << "\n\tand vertices " << graph_vertices[j] << " ";
 			graph.SetParameters(graph_vertices[j], graph_density[i], true, true);
-			for (int k = 0; k < 10; k++)
+			for (int k = 0; k < 5; k++)
 			{
 				RandomPath(start, finish, graph_vertices[j]);
 
 				StartCounter();
-				result = graph.FordFulkerson(start, finish);
+				result = graph.FordFulkerson(start, finish);			
 				time += GetCounter();
+				std::cout << result << " ";
 			}
-			file << std::fixed << time / 10 << "\n";
+			file << std::fixed << time / 5 << "\n";
 			time = 0.0;
 		}
 	}
@@ -531,10 +532,10 @@ void FordFulkersonMatrix()
 
 	for (int i = 0; i < 4; i++)
 	{
-		std::cout << "\nStart for graph with denisty " << graph_density[i];
+		std::cout << "\nStart for graph with denisty " << graph_density[i] ;
 		for (int j = 0; j < 5; j++)
 		{
-			std::cout << "\n\tand vertices " << graph_vertices[j];
+			std::cout << "\n\tand vertices " << graph_vertices[j] << " ";
 			graph.SetParameters(graph_vertices[j], graph_density[i], true, true);
 			for (int k = 0; k < 5; k++)
 			{
@@ -543,6 +544,8 @@ void FordFulkersonMatrix()
 				StartCounter();
 				result = graph.FordFulkerson(start, finish);
 				time += GetCounter();
+				std::cout << result << " ";
+
 			}
 			file << std::fixed << time / 5 << "\n";
 			time = 0.0;
