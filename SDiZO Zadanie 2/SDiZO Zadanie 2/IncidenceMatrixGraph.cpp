@@ -247,8 +247,6 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 
 	//Create Queue for ids 
 	DTS::PriorityQueue<uint, uint> frontier;
-	//Create vector to store vertices, mark all as not visited
-	//Current id 
 
 	frontier.Insert(start_id, 0);
 	came_from[start_id] = start_id;
@@ -256,7 +254,6 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 
 	while (!frontier.IsEmpty())
 	{
-		//Deque a vertex from queue and print it's id
 		auto current = frontier.GetFront();
 		frontier.PopFront();
 
@@ -264,21 +261,27 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 		if (current == finish_id)
 			break;
 
-		//Iterate through all the edges to find neighbour vertices
+		//Iterate through all the edges to find neighbour nodes
 		for (uint it = 0; it<edges_;it++)
 		{
-			//If vertex is an edge source ( vertex has neighbour)
+			//If node is an edge source ( node has neighbour)
 			if (matrix_[current][it] == 1)
 			{
 				//Find the destination of edge
 				uint destination_id = FindEdgeDestination(current, it);
 				//Find the total cost of edge
 				uint new_cost = cost_so_far[current] + weights[it];
-				//Find the destination of edge				
-				if (!cost_so_far.count(destination_id) || new_cost < cost_so_far[destination_id]) {
+				
+				//If the cost so far for node is empty, or new_cost is lower tha cost so far for that node
+				if (!cost_so_far.count(destination_id) || new_cost < cost_so_far[destination_id]) 
+				{
+					//Update the cost of path to the node
 					cost_so_far[destination_id] = new_cost;
+					//Calculate the priority of node
 					uint priority = new_cost + GetHeuristicValue(destination_id, finish_id);
+					//Insert the node into queue
 					frontier.Insert(destination_id, priority);
+					//Add node to path
 					came_from[destination_id] = current;
 				}
 			}			
@@ -293,39 +296,42 @@ DTS::Vector<uint> SDZ::IncidenceMatrixGraph::AStarPathSearch(uint start_id, uint
 	SetHeuristic(h);
 
 	//Create Queue for ids 
-	DTS::PriorityQueue<uint, uint> frontier;
-	//Create vector to store vertices, mark all as not visited
-	//Current id 
+	DTS::PriorityQueue<uint, uint> p_queue;
 
-	frontier.Insert(start_id, 0);
+	p_queue.Insert(start_id, 0);
 	came_from[start_id] = start_id;
 	cost_so_far[start_id] = 0;
 
-	while (!frontier.IsEmpty())
+	while (!p_queue.IsEmpty())
 	{
-		//Deque a vertex from queue and print it's id
-		auto current = frontier.GetFront();
-		frontier.PopFront();
+		auto current = p_queue.GetFront();
+		p_queue.PopFront();
 
 		//If the goal is reached, stop early
 		if (current == finish_id)
 			break;
 
-		//Iterate through all the edges to find neighbour vertices
+		//Iterate through all the edges to find neighbour nodes
 		for (uint it = 0; it<edges_; it++)
 		{
-			//If vertex is an edge source ( vertex has neighbour)
+			//If vertex is an edge source ( node has neighbour)
 			if (matrix_[current][it] == 1)
 			{
 				//Find the destination of edge
 				uint destination_id = FindEdgeDestination(current, it);
 				//Find the total cost of edge
 				uint new_cost = cost_so_far[current] + weights[it];
-				//Find the destination of edge				
-				if (!cost_so_far.count(destination_id) || new_cost < cost_so_far[destination_id]) {
+
+				//If the cost so far for node is empty, or new_cost is lower tha cost so far for that node
+				if (!cost_so_far.count(destination_id) || new_cost < cost_so_far[destination_id])
+				{
+					//Update the cost of path to the node
 					cost_so_far[destination_id] = new_cost;
+					//Calculate the priority of node
 					uint priority = new_cost + GetHeuristicValue(destination_id, finish_id);
-					frontier.Insert(destination_id, priority);
+					//Insert the node into queue
+					p_queue.Insert(destination_id, priority);
+					//Add node to path
 					came_from[destination_id] = current;
 				}
 			}
@@ -372,9 +378,11 @@ uint SDZ::IncidenceMatrixGraph::FordFulkerson(uint source, uint sink)
 		{
 			parent_node = path[curr_node];
 			uint edge_id = GetEdgeId(parent_node, curr_node);
+			//Substract path flow from reverse path
 			if(edge_id!=-1)
 				residual_weights[edge_id] = residual_weights[edge_id] + (path_flow * -1);
 			edge_id = GetEdgeId(curr_node, parent_node);
+			//And add to path
 			if (edge_id != -1)
 				residual_weights[edge_id] = residual_weights[edge_id] + path_flow;
 		}
@@ -930,7 +938,6 @@ uint SDZ::IncidenceMatrixGraph::GetEuclideanHeuristic(uint source, uint destinat
 
 uint SDZ::IncidenceMatrixGraph::GetHeuristicValue(uint source, uint destination)
 {
-	// TODO change to switch
 	if (heuristic_ == MANHATTAN)
 	{
 		return GetManhattanHeuristic(source, destination);

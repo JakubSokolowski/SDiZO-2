@@ -23,36 +23,40 @@ namespace SDZ
 
 	public:
 
-		//Constructors 
+		// Graph Construction
 
 		IncidenceMatrixGraph();
 		IncidenceMatrixGraph(std::string filename, bool is_directed, bool is_euclidean);
-		IncidenceMatrixGraph(uint vertices, double density,bool is_directed, bool is_euclidean);		
+		IncidenceMatrixGraph(uint vertices, double density,bool is_directed, bool is_euclidean);	
+		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
+
 		void SetParameters(uint vertices, double density, bool is_directed, bool is_euclidean);
 
-		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
-		~IncidenceMatrixGraph();
+		void WriteToFile(std::string filename);
+		void ReadFromFile(std::string filename, bool is_directed, bool is_euclidean);
 
 		void AddEdge(uint origin, uint destination, uint weight);
+
+		~IncidenceMatrixGraph();
+
+
+		//A*
 		uint AStarDistanceSearch(uint origin, uint destination, Heuristic h);
 		DTS::Vector<uint> AStarPathSearch(uint origin, uint destination, Heuristic h);
+
+		//Ford-Fulkerson
 		uint FordFulkerson(uint source, uint sink);
-		uint FindEdgeDestination(uint vertex, uint edge);
-		int GetEdgeWeight(uint source, uint destination);
-		int GetResidualEdgeWeight(uint source, uint destination);
-		int GetEdgeId(uint source, uint destination);
-		void DisplayMatrix();
-		void DisplayWeights();
 	
-		bool IsConnected(uint origin, uint destination);
+		void DisplayMatrix();
+		void DisplayWeights();	
 
 		void DisplayMap();
 		void DisplayMapWithId();
 		void DrawPath(DTS::Vector<uint> &vec);
 		void DisplayInfo();
 
-		void WriteToFile(std::string filename);
-		void ReadFromFile(std::string filename, bool is_directed, bool is_euclidean);
+
+
 	private:
 
 		int **matrix_;
@@ -67,11 +71,10 @@ namespace SDZ
 		
 		DTS::Vector<std::pair<uint, uint>> coordinates_;
 	
+		void ClearGraph();
 
 		//Chosen heuristic function
 		SDZ::Heuristic heuristic_;
-
-		bool IsValidEdge(uint origin, uint destination);
 
 		//Random Graph Generation
 
@@ -80,22 +83,30 @@ namespace SDZ
 		void GenerateCoordinates();
 		uint CalculateMapSize();
 
-		void ClearGraph();
+		
 
 		//Map Generation & Display
 
 		int **map_;
 		uint map_size_;
 
-		void SetCoordinates(uint vertex, uint X, uint Y);
-	
+		void SetCoordinates(uint vertex, uint X, uint Y);	
 		void ClearMap();
+
+		// Utility
 		uint FindVertex(uint x, uint y);
+		uint FindEdgeDestination(uint vertex, uint edge);
 		uint GetNumberOfDigits(uint number);
 
+		int GetEdgeWeight(uint source, uint destination);
+		int GetResidualEdgeWeight(uint source, uint destination);
+		int GetEdgeId(uint source, uint destination);
+
+		bool IsConnected(uint source, uint destination);
+		bool IsValidEdge(uint origin, uint destination);
 		uint CalculateNumberOfEdges(uint vertices,double density);
 	
-		//A star
+		// A star
 
 		void SetHeuristic(Heuristic h);
 		uint GetDistance(uint source, uint destination);
@@ -103,7 +114,7 @@ namespace SDZ
 		uint GetEuclideanHeuristic(uint source, uint destination);
 		uint GetHeuristicValue(uint source, uint destination);
 
-		//Ford-Fulkerson
+		// Ford-Fulkerson
 		bool FordFulkersonBFS(uint source, uint destination, int path[]);
 	};
 

@@ -908,9 +908,9 @@ DTS::Vector<uint> SDZ::AdjacencyListGraph::AStarPathSearch(uint start, uint goal
 //Returns the distance of path
 uint SDZ::AdjacencyListGraph::AStarDistanceSearch(uint start_id, uint finish_id, Heuristic h)
 {
-	//Stores path from all nodes
+	//Stores path 
 	std::unordered_map<uint, uint> came_from;
-	//Stores the cost of all paths
+	//Stores cost 
 	std::unordered_map<uint, uint> cost_so_far;
 	SetHeuristic(h);
 

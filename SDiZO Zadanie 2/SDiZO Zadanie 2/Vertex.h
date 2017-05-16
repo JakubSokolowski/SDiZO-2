@@ -38,11 +38,6 @@ namespace SDZ
 		Vertex & operator = (const Vertex&);
 
 
-		//priority - edge weight + A* heuristic
-		uint priority;
-
-		void UpadatePriority();
-
 	private:
 		
 		

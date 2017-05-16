@@ -151,10 +151,6 @@ void IncidenceMatrixTest()
 	test_graph.AddEdge(4, 3, 7);
 	test_graph.AddEdge(4, 5, 4);
 
-	std::cout << test_graph.IsConnected(1, 3) << std::endl;
-	std::cout << test_graph.IsConnected(3, 1) << std::endl;
-	std::cout << test_graph.IsConnected(5, 4) << std::endl;
-	std::cout << test_graph.IsConnected(4, 5) << std::endl;
 
 	test_graph.DisplayMatrix();
 	test_graph.DisplayWeights();

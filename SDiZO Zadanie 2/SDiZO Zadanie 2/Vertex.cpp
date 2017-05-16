@@ -112,9 +112,4 @@ SDZ::Vertex & SDZ::Vertex::operator=(const Vertex &other)
 	return *this;
 }
 
-void SDZ::Vertex::UpadatePriority()
-{
-	
-}
-
 

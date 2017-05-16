@@ -11,6 +11,8 @@ namespace SDZ
 		uint source_id;
 		uint destination_id;
 		uint weight_;
+
+		//Used in Ford-Fulkerson
 		uint residual_weight_;
 		Edge();
 		Edge(uint source, uint destination, uint weight);
