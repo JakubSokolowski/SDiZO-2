@@ -418,7 +418,7 @@ namespace DTS
 						y = temp;
 					}
 					// 11
-					fib_heap_link(y, x);
+					LinkHeaps(y, x);
 					// 12
 					A[d] = nullptr;
 					// 13
@@ -462,12 +462,12 @@ namespace DTS
 		}
 
 		/*
-		* fib_heap_link(y,x)
+		* LinkHeaps(y,x)
 		* 1. remove y from the root list of heap
 		* 2. make y a child of x, incrementing x.degree
 		* 3. y.mark = FALSE
 		*/
-		void fib_heap_link(FibNode* y, FibNode* x)
+		void LinkHeaps(FibNode* y, FibNode* x)
 		{
 			// 1
 			y->left->right = y->right;
@@ -524,9 +524,9 @@ namespace DTS
 			if (y != nullptr && x->key < y->key)
 			{
 				// 6
-				cut(x, y);
+				Cut(x, y);
 				// 7
-				cascading_cut(y);
+				CascadingCut(y);
 			}
 			// 8
 			if (x->key < min_node_->key)
@@ -537,13 +537,13 @@ namespace DTS
 		}
 
 		/*
-		* cut(x,y)
+		* Cut(x,y)
 		* 1. remove x from the child list of y, decrementing y.degree
 		* 2. add x to the root list of H
 		* 3. x.p = NIL
 		* 4. x.mark = FALSE
 		*/
-		void cut(FibNode* x, FibNode* y)
+		void Cut(FibNode* x, FibNode* y)
 		{
 			// 1
 			if (x->right == x)
@@ -572,7 +572,7 @@ namespace DTS
 		}
 
 		/*
-		* cascading_cut(y)
+		* CascadingCut(y)
 		* 1. z = y.p
 		* 2. if z != NIL
 		* 3. 	if y.mark == FALSE
@@ -580,7 +580,7 @@ namespace DTS
 		* 5. 	else CUT(H,y,z)
 		* 6. 		CASCADING-CUT(H,z)
 		*/
-		void cascading_cut(FibNode* y)
+		void CascadingCut(FibNode* y)
 		{
 			FibNode* z;
 
@@ -598,9 +598,9 @@ namespace DTS
 				else
 				{
 					// 5
-					cut(y, z);
+					Cut(y, z);
 					// 6
-					cascading_cut(z);
+					CascadingCut(z);
 				}
 			}
 		}
@@ -609,7 +609,7 @@ namespace DTS
 		* set to infinity so that it hits the top of the heap, then easily remove.
 		*/
 
-		void remove_fibnode(FibNode* x)
+		void RemoveNode(FibNode* x)
 		{
 			DecreaseKey(x, std::numeric_limits<T>::min_());
 			FibNode *fn = ExtractMin();
