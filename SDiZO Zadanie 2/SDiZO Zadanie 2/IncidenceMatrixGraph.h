@@ -27,8 +27,7 @@ namespace SDZ
 
 		IncidenceMatrixGraph();
 		IncidenceMatrixGraph(std::string filename, bool is_directed, bool is_euclidean);
-		IncidenceMatrixGraph(uint vertices, double density,bool is_directed, bool is_euclidean);
-		
+		IncidenceMatrixGraph(uint vertices, double density,bool is_directed, bool is_euclidean);		
 		void SetParameters(uint vertices, double density, bool is_directed, bool is_euclidean);
 
 		IncidenceMatrixGraph(uint vertices_count, uint edges_count);
@@ -40,6 +39,7 @@ namespace SDZ
 		uint FordFulkerson(uint source, uint sink);
 		uint FindEdgeDestination(uint vertex, uint edge);
 		int GetEdgeWeight(uint source, uint destination);
+		int GetResidualEdgeWeight(uint source, uint destination);
 		int GetEdgeId(uint source, uint destination);
 		void DisplayMatrix();
 		void DisplayWeights();
@@ -51,6 +51,8 @@ namespace SDZ
 		void DrawPath(DTS::Vector<uint> &vec);
 		void DisplayInfo();
 
+		void WriteToFile(std::string filename);
+		void ReadFromFile(std::string filename, bool is_directed, bool is_euclidean);
 	private:
 
 		int **matrix_;
@@ -61,6 +63,7 @@ namespace SDZ
 		uint edges_max_num_;
 		uint edge_max_weight_;
 		int *weights;
+		int *residual_weights;
 		
 		DTS::Vector<std::pair<uint, uint>> coordinates_;
 	

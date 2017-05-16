@@ -49,6 +49,9 @@ SDZ::IncidenceMatrixGraph::IncidenceMatrixGraph(std::string filepath, bool is_di
 
 	edges_ = edges;
 
+	weights = new int[edges_]();
+	residual_weights = new int[edges_]();
+
 	if (is_directed)
 		edges_max_num_ = vertices_ * (vertices_ - 1);
 	else
@@ -108,6 +111,7 @@ SDZ::IncidenceMatrixGraph::IncidenceMatrixGraph(uint vertices, double density, b
 	edges_ = CalculateNumberOfEdges(edges_max_num_, density);
 	//Create array to hold the weights of edges
 	weights = new int[edges_]();
+	residual_weights = new int[edges_]();
 
 	for (uint i = 0; i < vertices_; i++)
 	{
@@ -145,6 +149,7 @@ void SDZ::IncidenceMatrixGraph::SetParameters(uint vertices, double density, boo
 	edges_ = CalculateNumberOfEdges(edges_max_num_, density);
 	//Create array to hold the weights of edges
 	weights = new int[edges_]();
+	residual_weights = new int[edges_]();
 
 	for (uint i = 0; i < vertices_; i++)
 	{
@@ -176,6 +181,7 @@ IncidenceMatrixGraph::IncidenceMatrixGraph(uint number_of_vertices, uint number_
 	matrix_ = new int *[number_of_vertices];
 	//Create array to hold the weights of edges
 	weights = new int[number_of_edges]();
+	residual_weights = new int[number_of_edges]();
 
 	for (uint i = 0; i < number_of_vertices; i++)
 	{
@@ -259,7 +265,7 @@ uint SDZ::IncidenceMatrixGraph::AStarDistanceSearch(uint start_id, uint finish_i
 			break;
 
 		//Iterate through all the edges to find neighbour vertices
-		for (auto it = 0; it<edges_;it++)
+		for (uint it = 0; it<edges_;it++)
 		{
 			//If vertex is an edge source ( vertex has neighbour)
 			if (matrix_[current][it] == 1)
@@ -306,7 +312,7 @@ DTS::Vector<uint> SDZ::IncidenceMatrixGraph::AStarPathSearch(uint start_id, uint
 			break;
 
 		//Iterate through all the edges to find neighbour vertices
-		for (auto it = 0; it<edges_; it++)
+		for (uint it = 0; it<edges_; it++)
 		{
 			//If vertex is an edge source ( vertex has neighbour)
 			if (matrix_[current][it] == 1)
@@ -342,6 +348,10 @@ uint SDZ::IncidenceMatrixGraph::FordFulkerson(uint source, uint sink)
 {
 	uint curr_node, parent_node;
 	uint max_flow = 0;
+
+	//Create the residual weihts
+	memcpy(residual_weights, weights, current_edges_ * sizeof(int));
+
 	//Filled by BFS
 	int *path = new int [vertices_];	
 
@@ -356,17 +366,17 @@ uint SDZ::IncidenceMatrixGraph::FordFulkerson(uint source, uint sink)
 		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
 		{
 			parent_node = path[curr_node];
-			path_flow = min(path_flow, GetEdgeWeight(parent_node,curr_node));
+			path_flow = min(path_flow, GetResidualEdgeWeight(parent_node,curr_node));
 		}
 		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
 		{
 			parent_node = path[curr_node];
 			uint edge_id = GetEdgeId(parent_node, curr_node);
 			if(edge_id!=-1)
-				weights[edge_id] = weights[edge_id] + (path_flow * -1);
+				residual_weights[edge_id] = residual_weights[edge_id] + (path_flow * -1);
 			edge_id = GetEdgeId(curr_node, parent_node);
 			if (edge_id != -1)
-				weights[edge_id] = weights[edge_id] + path_flow;
+				residual_weights[edge_id] = residual_weights[edge_id] + path_flow;
 		}
 		//Add to max_flow
 		max_flow += path_flow;
@@ -432,6 +442,17 @@ int SDZ::IncidenceMatrixGraph::GetEdgeWeight(uint source, uint destination)
 	return NULL;
 }
 
+int SDZ::IncidenceMatrixGraph::GetResidualEdgeWeight(uint source, uint destination)
+{
+	for (uint i = 0; i < edges_; i++)
+	{
+		if (matrix_[source][i] == 1)
+			if (matrix_[destination][i] != NO_EDGE)
+				return residual_weights[i];
+	}
+	return NULL;
+}
+
 int SDZ::IncidenceMatrixGraph::GetEdgeId(uint source, uint destination)
 {
 	for (uint i = 0; i < edges_; i++)
@@ -452,7 +473,7 @@ bool IncidenceMatrixGraph::IsValidEdge(uint origin, uint destination)
 
 bool SDZ::IncidenceMatrixGraph::IsConnected(uint origin, uint destination)
 {
-	for (auto it = 0; it < edges_; it++)
+	for (uint it = 0; it < edges_; it++)
 	{
 		if (matrix_[origin][it] == 1)
 			if (matrix_[destination][it] != NO_EDGE)
@@ -770,6 +791,97 @@ void SDZ::IncidenceMatrixGraph::DisplayInfo()
 	std::cout << std::setprecision(2) << "Density  : " << double(edges_) / edges_max_num_ << "\n\n";
 }
 
+void SDZ::IncidenceMatrixGraph::WriteToFile(std::string filename)
+{
+	std::ofstream file(filename);
+	file << edges_ << " " << vertices_ << "\n";
+
+	//Write coordinates
+	if (is_euclidean_)
+	{
+		for (auto it : coordinates_)
+		{
+			file << it.first << " " << it.second;
+		}
+	}
+
+	//Write edges
+	for (uint it = 0; it < current_edges_; it++)
+	{
+		for (uint i = 0; i < vertices_; i++)
+		{
+			if (matrix_[i][it] == 1)
+			{
+				file << i << " " << weights[it] << FindEdgeDestination(i, it) << "\n";
+			}				
+		}
+	}
+	file.close();
+}
+
+void SDZ::IncidenceMatrixGraph::ReadFromFile(std::string filename, bool is_directed, bool is_euclidean)
+{
+	ClearGraph();
+	is_euclidean_ = is_euclidean;
+	is_directed_ = is_directed;
+
+	std::fstream file;
+	file.open(filename, std::ios_base::in);
+	if (!file)
+		throw std::runtime_error("Could not open the file");
+
+	uint edges, source, destination, weight, x, y;
+
+	file >> edges;
+	file >> vertices_;
+
+	edges_ = edges;
+
+	if (is_directed)
+		edges_max_num_ = vertices_ * (vertices_ - 1);
+	else
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
+
+	//Create Matrix
+	matrix_ = new int *[vertices_];
+	//Create array to hold the weights of edges
+	weights = new int[edges]();
+	residual_weights = new int[edges_]();
+
+	for (uint i = 0; i < vertices_; i++)
+	{
+		matrix_[i] = new int[edges_];
+		//Mark all rows as NO_EDGE
+		for (uint j = 0; j < edges_; j++)
+		{
+			matrix_[i][j] = NO_EDGE;
+		}
+	}
+
+	coordinates_.assign(vertices_, std::pair<uint, uint>(0, 0));
+
+	//Read Coordinates from file
+	if (is_euclidean)
+	{
+		for (uint it = 0; it < vertices_; it++)
+		{
+			if (file >> x >> y)
+			{
+				SetCoordinates(it, x, y);
+			}
+		}
+	}
+
+	//Read edges from file
+	while (file >> source >> destination >> weight)
+	{
+		if (!IsConnected(source, destination))
+			AddEdge(source, destination, weight);
+	}
+	is_directed_ = is_directed;
+	file.close();
+}
+
 uint SDZ::IncidenceMatrixGraph::FindVertex(uint x, uint y)
 {
 	for (uint it = 0; it < vertices_; ++it)
@@ -777,6 +889,7 @@ uint SDZ::IncidenceMatrixGraph::FindVertex(uint x, uint y)
 		if (coordinates_.at(it).first == x && coordinates_.at(it).second == y)
 			return it;		
 	}
+	return NULL;
 }
 
 uint SDZ::IncidenceMatrixGraph::GetNumberOfDigits(uint n)
@@ -862,7 +975,7 @@ bool SDZ::IncidenceMatrixGraph::FordFulkersonBFS(uint source, uint destination, 
 				uint destination_id = FindEdgeDestination(curr_ver, it);
 				//If the destination vertex of edge has not been visited 
 				//And the current edge capacity > 0
-				if (!visited[destination_id] && weights[it] > 0)
+				if (!visited[destination_id] && residual_weights[it] > 0)
 				{
 					//Enqueue it
 					queue.PushBack(destination_id);
