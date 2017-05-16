@@ -11,6 +11,7 @@ namespace SDZ
 		uint source_id;
 		uint destination_id;
 		uint weight_;
+		uint residual_weight_;
 		Edge();
 		Edge(uint source, uint destination, uint weight);
 		~Edge();
