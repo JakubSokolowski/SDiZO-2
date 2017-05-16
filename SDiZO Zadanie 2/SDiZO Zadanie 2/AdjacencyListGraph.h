@@ -47,6 +47,7 @@ namespace SDZ
 		void SetMaxWeight(uint max_weight);
 		void WriteToFile(uint vertices, double density, bool is_directed, bool is_euclidean, std::string filename);
 		void WriteToFile(std::string filename);
+		void ReadFromFile(std::string filename, bool is_directed, bool is_euclidean);
 
 		//Access
 		uint GetX(uint vertex);
@@ -123,6 +124,7 @@ namespace SDZ
 
 		//Ford Fulkerson
 		bool FordFulkersonBFS(uint source, uint sink,int path[]);
+		void CopyResidualWeights();
 		//Prim		
 
 		//A* 

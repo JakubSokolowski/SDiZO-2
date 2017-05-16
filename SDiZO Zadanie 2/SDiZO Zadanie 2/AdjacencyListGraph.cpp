@@ -290,6 +290,54 @@ void SDZ::AdjacencyListGraph::WriteToFile(std::string filename)
 	file.close();
 }
 
+void SDZ::AdjacencyListGraph::ReadFromFile(std::string filepath, bool is_directed, bool is_euclidean)
+{
+	//Assign the graph parameters needed for proper graph construction
+	ClearGraph();
+	is_euclidean_ = is_euclidean;
+	is_directed_ = is_directed;
+
+	std::fstream file;
+	file.open(filepath, std::ios_base::in);
+	if (!file)
+		throw std::runtime_error("Could not open the file");
+
+	uint edges, source, destination, weight, x, y;
+
+	file >> edges;
+	file >> vertices_;
+
+	if (is_directed)
+		edges_max_num_ = vertices_ * (vertices_ - 1);
+	else
+		edges_max_num_ = vertices_ * (vertices_ - 1) / 2;
+
+	adj_tab_ = new Vertex[vertices_];
+	for (uint i = 0; i < vertices_; i++)
+	{
+		adj_tab_[i].vertex_id_ = i;
+	}
+	if (is_euclidean)
+	{
+		for (uint it = 0; it < vertices_; it++)
+		{
+			if (file >> x >> y)
+			{
+				SetX(it, x);
+				SetY(it, y);
+			}
+		}
+	}
+
+	while (file >> source >> destination >> weight)
+	{
+		if (!adj_tab_[source].IsConnected(destination))
+			AddEdge(source, destination, weight);
+	}
+	is_directed_ = is_directed;
+	file.close();
+}
+
 uint SDZ::AdjacencyListGraph::GetX(uint vertex)
 {
 	return adj_tab_[vertex].x_;
@@ -419,6 +467,7 @@ DTS::List<uint> SDZ::AdjacencyListGraph::BFT(uint start_id, uint finish_id)
 
 uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
 {
+	CopyResidualWeights();
 	uint curr_node, parent_node;
 	uint max_flow = 0;
 	//Filled by BFS
@@ -436,16 +485,16 @@ uint SDZ::AdjacencyListGraph::FordFulkerson(uint source, uint sink)
 		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
 		{
 			parent_node = path[curr_node];
-			path_flow = min(path_flow, adj_tab_[parent_node].GetConnectionWeight(curr_node));
+			path_flow = min(path_flow, adj_tab_[parent_node].GetResidualWeight(curr_node));
 		}
 		for (curr_node = sink; curr_node != source; curr_node = path[curr_node])
 		{
 			parent_node = path[curr_node];
 
 			//Substract path flow from reverse path
-			adj_tab_[parent_node].AddToEdgeWeight(curr_node, path_flow * -1);
+			adj_tab_[parent_node].AddToResidualWeight(curr_node, path_flow * -1);
 			//And add to path
-			adj_tab_[curr_node].AddToEdgeWeight(parent_node, path_flow);
+			adj_tab_[curr_node].AddToResidualWeight(parent_node, path_flow);
 		}
 		//Add to max_flow
 		max_flow += path_flow;
@@ -1032,11 +1081,11 @@ void SDZ::AdjacencyListGraph::PQPrimMST()
 		}
 	}
 
-	//std::cout << "Minimum spanning tree : " << std::endl;
-	//for (uint i = 1; i < vertices_; ++i)
-	//{
-	//	std::cout << parent[i] << " " << i << ":  " << weights[i] << std::endl;
-	//}
+	std::cout << "Minimum spanning tree : " << std::endl;
+	for (uint i = 1; i < vertices_; ++i)
+	{
+		std::cout << parent[i] << " " << i << ":  " << weights[i] << std::endl;
+	}
 }
 
 //Returns the id of vertex at given coordinates
@@ -1118,7 +1167,7 @@ bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int
 		for (auto it = adj_tab_[curr_ver].list_.begin(); it != adj_tab_[curr_ver].list_.end(); it++)
 		{
 			//If adjacent has not been visited and the connection capacity > 0 (there is possbile flow)
-			if (!visited[it->destination_id] && adj_tab_[curr_ver].GetConnectionWeight(it->destination_id) > 0)
+			if (!visited[it->destination_id] && adj_tab_[curr_ver].GetResidualWeight(it->destination_id) > 0)
 			{				
 				//Enqueue it
 				queue.PushBack(it->destination_id);
@@ -1130,6 +1179,14 @@ bool SDZ::AdjacencyListGraph::FordFulkersonBFS(uint source, uint destination,int
 		}
 	}
 	return (visited[destination]==true);
+}
+
+void SDZ::AdjacencyListGraph::CopyResidualWeights()
+{
+	for (uint it = 0; it < vertices_; it++)
+	{
+		adj_tab_[it].CopyResidual();
+	}
 }
 
 //Sets the heuristic used in A* search
