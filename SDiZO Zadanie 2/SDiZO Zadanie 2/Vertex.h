@@ -26,21 +26,18 @@ namespace SDZ
 
 		void AddEdge(uint destination, uint weight);
 		uint GetEdgeWeight(uint destination);
-		void AddToEdgeWeight(uint destination, int weight);
+		void AddToResidualWeight(uint destination, int weight);
 		void DisplayListWithWeights();
 		void DisplayList();
 
 		bool IsConnected(uint destination);
 		uint GetConnectionWeight(uint destination);
+		uint GetResidualWeight(uint destination);
+		void CopyResidual();
 		void SetCoordinates(uint x, uint y);
 		Vertex & operator = (const Vertex&);
 
-		//A * related fields
 
-		//total distance alredy travelled to reach this node
-		uint G;
-		uint H;
-		uint level;
 		//priority - edge weight + A* heuristic
 		uint priority;
 
