@@ -253,3 +253,5 @@ paket-files/
 *.filters
 *.vcxproj
 /sdizo_zadanie_projektowe_nr_2.pdf
+/SDiZO Zadanie 2/TestSamples
+*.txt
