@@ -38,11 +38,11 @@ uint SDZ::Vertex::GetEdgeWeight(uint destination)
 	return NULL;
 }
 
-void SDZ::Vertex::AddToEdgeWeight(uint destination, int weight)
+void SDZ::Vertex::AddToResidualWeight(uint destination, int weight)
 {
 	for (auto it = list_.begin(); it != list_.end(); it++)
 		if (it->destination_id == destination)
-			 it->weight_ += weight;
+			 it->residual_weight_ += weight;
 }
 
 void SDZ::Vertex::DisplayListWithWeights()
@@ -77,6 +77,24 @@ uint SDZ::Vertex::GetConnectionWeight(uint destination)
 	{
 		if (destination == it->destination_id)
 			return it->weight_;
+	}
+}
+
+uint SDZ::Vertex::GetResidualWeight(uint destination)
+{
+	for (auto it = list_.begin(); it != list_.end(); it++)
+	{
+		if (destination == it->destination_id)
+			return it->residual_weight_;
+	}
+}
+
+void SDZ::Vertex::CopyResidual()
+{
+
+	for (auto it = list_.begin(); it != list_.end(); it++)
+	{
+		it->residual_weight_ = it->weight_;
 	}
 }
 

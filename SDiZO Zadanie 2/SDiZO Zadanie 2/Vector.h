@@ -188,6 +188,7 @@ namespace DTS {
 		for (i = 0; i < other.vec_sz; ++i)
 			arr[i] = other.arr[i];
 		vec_sz = other.vec_sz;
+		return *this;
 	}
 
 	template <typename T>
@@ -200,6 +201,7 @@ namespace DTS {
 		for (i = 0; i < other.vec_sz; ++i)
 			arr[i] = std::move(other.arr[i]);
 		vec_sz = other.vec_sz;
+		return *this;
 	}
 
 	template <typename T>
